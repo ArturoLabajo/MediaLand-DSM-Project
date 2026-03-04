@@ -1,5 +1,9 @@
 import { useState } from 'react'
-import './App.css'
+// import Film/ import FilmDetailView from "./Film/view/FilmDetailView";
+// import ContactView from "./Static/ContactView";
+// import LegalView from "./Static/LegalView";
+// import AuthView from "./Auth/AuthView";
+
 
 function App() {
 
