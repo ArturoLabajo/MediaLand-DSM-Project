@@ -4,13 +4,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
+  background: #FCEDFC;
 }
 
 .logo {
   animation: fadeOut 1s ease forwards;
   align-items: center;
   justify-content: center;
+}
+
+.App {
+  background: #FCEDFC;
 }
 
 @keyframes fadeOut {

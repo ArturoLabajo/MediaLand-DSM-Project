@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css';
+import Sidebar from './Auth/AuthView';
 //import Film/ import FilmDetailView from "./Film/view/FilmDetailView";
 //import ContactView from "./Static/ContactView";
 //import LegalView from "./Static/LegalView";
@@ -29,8 +30,11 @@ function App() {
 
   return (
     <>
-      <h1> Hola </h1>
-      <h1> Adios</h1>
+      <body className="App">
+        <Sidebar />
+        <h1> Hola </h1>
+        <h1> Adios</h1>
+      </body>
     </>
   )
 }
