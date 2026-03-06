@@ -5,6 +5,9 @@ import logo from "../img/logo_001.png";
 
 function Sidebar() {
   return (
+    <>
+    <h1>MediaLand</h1>
+    
     <Nav
       className="navbar navbar-light fixed-top"
       style={{ backgroundColor: "#2E092E" }}
@@ -67,6 +70,7 @@ function Sidebar() {
 
       </div>
     </Nav>
+    </>
   );
 }
 
