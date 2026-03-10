@@ -13,10 +13,6 @@
   justify-content: center;
 }
 
-.App {
-  background: #FCEDFC;
-}
-
 @keyframes fadeOut {
   0% {
     opacity: 1;

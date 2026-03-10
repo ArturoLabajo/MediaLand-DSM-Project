@@ -29,13 +29,9 @@ function App() {
   }
 
   return (
-    <>
-      <body className="App">
-        <Sidebar />
-        <h1> Hola </h1>
-        <h1> Adios</h1>
-      </body>
-    </>
+    <div style={{ background: "#FCEDFC", minHeight: "100vh", minWidth: "100vw"}}>
+      <Sidebar />
+    </div>
   )
 }
 
