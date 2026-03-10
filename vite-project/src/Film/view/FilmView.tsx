@@ -20,6 +20,7 @@ function Catalogo () {
             <FilmCard key={film.id} film={film} />
             ))}
         </div>
+        
         </div>
     );
 };
