@@ -6,11 +6,11 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import FilmCard from "./Film/domain/Film";
 import LocalFilmRepository from "./Film/infrastructure/LocalFilmRespository";
-import type { Film } from "./Film/domain/Film";
 import Catalogo from "./Film/view/FilmView";
 import Header from "./Components/Header";
 import Legal from "./Static/LegalView";
 import Contact from "./Static/ContactView";
+import type { Film } from "./Film/domain/Film";
 import logo from "./img/logo_001.png";
 import { Route, Routes } from "react-router-dom";
 
