@@ -1,15 +1,21 @@
-import { useState, useEffect } from 'react'
-import './App.css';
-import Sidebar from './Auth/AuthView';
-//import Film/ import FilmDetailView from "./Film/view/FilmDetailView";
-//import ContactView from "./Static/ContactView";
-//import LegalView from "./Static/LegalView";
-//7import AuthView from "./Auth/AuthView";
+import { useState, useEffect } from "react";
+import "./App.css";
+import Catalogo from "./Film/view/FilmView";
+import Header from "./Components/Header";
+import Legal from "./Static/LegalView";
+import Contact from "./Static/ContactView";
 import logo from "./img/logo_001.png";
+import { Route, Routes } from "react-router-dom";
 
+function Home() {
+  return (
+    <div style={{ paddingTop: "120px" }}>
+      <h1>Home</h1>
+    </div>
+  );
+}
 
 function App() {
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,10 +35,17 @@ function App() {
   }
 
   return (
-    <div style={{ background: "#FCEDFC", minHeight: "100vh", minWidth: "100vw"}}>
-      <Sidebar />
+    <div style={{ background: "#FCEDFC", minHeight: "100vh", minWidth: "100vw" }}>
+      <Header session={false} />
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/catalogo" element={<Catalogo />} />
+        <Route path="/legal" element={<Legal />} />
+        <Route path="/contacto" element={<Contact />} />
+      </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
