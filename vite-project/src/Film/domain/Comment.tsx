@@ -4,5 +4,4 @@ export interface Comment {
   userId: string;
   userName: string;
   text: string;
-  createdAt: string;
 };
