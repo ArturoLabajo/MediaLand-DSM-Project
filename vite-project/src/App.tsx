@@ -13,6 +13,7 @@ import Contact from "./Static/ContactView";
 import type { Film } from "./Film/domain/Film";
 import logo from "./img/logo_001.png";
 import { Route, Routes } from "react-router-dom";
+import Detalles from "./Film/view/FilmDetailView";
 
 function Home() {
 
@@ -166,6 +167,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/catalogo" element={<Catalogo />} />
+        <Route path="/catalogo/:id" element={<Detalles />} />
         <Route path="/legal" element={<Legal />} />
         <Route path="/contacto" element={<Contact />} />
       </Routes>
