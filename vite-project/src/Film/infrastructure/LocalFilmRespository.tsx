@@ -133,7 +133,7 @@ export default class LocalFilmRepository implements FilmRepository {
       ratingAverage: 8.5,
       type: "SERIE",
       category: "Action",
-      image: "011_TheLastOfUs.jpg",
+      image: "/011_TheLastOfUs.jpg",
     },
     {
       id: "13",
@@ -144,7 +144,7 @@ export default class LocalFilmRepository implements FilmRepository {
       ratingAverage: 8.2,
       type: "MOVIE",
       category: "Thriller",
-      image: "012_ShutterIsland.jpg",
+      image: "/012_ShutterIsland.jpg",
     },
     {
       id: "14",
@@ -155,7 +155,7 @@ export default class LocalFilmRepository implements FilmRepository {
       ratingAverage: 8.1,
       type: "MOVIE",
       category: "Thriller",
-      image: "013_MonstersInc.jpg",
+      image: "/013_MonstersInc.jpg",
     },
     {
       id: "15",
@@ -166,7 +166,7 @@ export default class LocalFilmRepository implements FilmRepository {
       ratingAverage: 3.6,
       type: "MOVIE",
       category: "Comedy",
-      image: "014_PNHMQ5.jpg",
+      image: "/014_PNHMQ5.jpg",
     },
     {
       id: "16",
@@ -177,7 +177,7 @@ export default class LocalFilmRepository implements FilmRepository {
       ratingAverage: 9.2,
       type: "MOVIE",
       category: "Action",
-      image: "015_ElPlanetaDelTesoro.jpg",
+      image: "/015_ElPlanetaDelTesoro.jpg",
     },
   ];
 

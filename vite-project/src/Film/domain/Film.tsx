@@ -1,6 +1,7 @@
 import Card from "react-bootstrap/Card";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
+import { useNavigate } from "react-router-dom";
 
 export type FilmType = "MOVIE" | "SERIE";
 
@@ -21,6 +22,7 @@ interface FilmCardProps {
 }
 
 function FilmCard({ film }: FilmCardProps) {
+  const navigate = useNavigate();
   return (
     <Card
       style={{
@@ -145,6 +147,7 @@ function FilmCard({ film }: FilmCardProps) {
         </p>
 
         <Button
+          onClick={() => navigate(`/catalogo/${film.id}`)}
           style={{
             width: "100%",
             border: "none",
