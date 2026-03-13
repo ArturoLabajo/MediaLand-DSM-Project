@@ -14,6 +14,7 @@ import type { Film } from "./Film/domain/Film";
 import logo from "./img/logo_001.png";
 import { Route, Routes } from "react-router-dom";
 import Detalles from "./Film/view/FilmDetailView";
+import Login from "./Auth/AuthView";
 
 function Home() {
 
@@ -59,6 +60,7 @@ function Home() {
     >
 
       {/* HERO */}
+      <div className="mt-5" />
       <Container style={{ marginBottom: "60px" }}>
         <h1
           style={{
@@ -170,6 +172,7 @@ function App() {
         <Route path="/catalogo/:id" element={<Detalles />} />
         <Route path="/legal" element={<Legal />} />
         <Route path="/contacto" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </div>
   );
