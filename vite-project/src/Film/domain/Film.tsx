@@ -13,6 +13,7 @@ export interface Film {
   ratingAverage: number;
   type: FilmType;
   category: string;
+  image: string;
 }
 
 interface FilmCardProps {
@@ -35,9 +36,13 @@ function FilmCard({ film }: FilmCardProps) {
       <div
         style={{
           height: "240px",
-          background:
-            "linear-gradient(to top, rgba(20, 8, 18, 0.95), rgba(20, 8, 18, 0.1)), linear-gradient(135deg, #4a1f45 0%, #1a0317 55%, #2f1030 100%)",
-          padding: "16px",
+          backgroundImage: `
+            linear-gradient(to top, rgba(20, 8, 18, 0.95), rgba(20, 8, 18, 0.2)),
+            url(${film.image})
+          `,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",padding: "16px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between"
