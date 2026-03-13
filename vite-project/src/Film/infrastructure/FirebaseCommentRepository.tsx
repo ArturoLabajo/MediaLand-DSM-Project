@@ -10,6 +10,10 @@ const FirebaseCommentRepository: CommentRepository = {
 
         let arrayComments: Comment[] = [];
 
+        if (!response.data) {
+            return arrayComments;
+        }
+
         for (let key in response.data) {
             if (response.data[key].filmId == filmId) {
                 arrayComments.push({
