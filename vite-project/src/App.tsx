@@ -15,9 +15,15 @@ import logo from "./img/logo_001.png";
 import { Route, Routes } from "react-router-dom";
 import Detalles from "./Film/view/FilmDetailView";
 import Login from "./Auth/AuthView";
+import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import Register from "./Auth/RegisterView";
 
-function Home() {
+type HomeProps = {
+  session: boolean;
+};
 
+function Home({ session }: HomeProps) {
   const [films, setFilms] = useState<Film[]>([]);
   const [showSections, setShowSections] = useState(false);
 
@@ -25,7 +31,6 @@ function Home() {
     new LocalFilmRepository().getAll().then(setFilms);
   }, []);
 
-  // detectar scroll
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 150) {
@@ -38,12 +43,10 @@ function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Top 10 por rating
   const topRated = [...films]
     .sort((a, b) => b.ratingAverage - a.ratingAverage)
     .slice(0, 10);
 
-  // 4 recomendaciones aleatorias
   const randomRecommendations = [...films]
     .sort(() => 0.5 - Math.random())
     .slice(0, 4);
@@ -58,9 +61,8 @@ function Home() {
         paddingRight: "24px"
       }}
     >
-
-      {/* HERO */}
       <div className="mt-5" />
+
       <Container style={{ marginBottom: "60px" }}>
         <h1
           style={{
@@ -69,24 +71,51 @@ function Home() {
             fontSize: "3rem"
           }}
         >
-          Aqui va el inicio de sesión
+          {session ? "Bienvenido de nuevo" : "Descubre MediaLand"}
         </h1>
-
-        <p
-          style={{
-            color: "rgba(252,237,252,0.8)",
-            maxWidth: "600px",
-            fontSize: "1.2rem"
-          }}
-        >
-          Explora películas y series seleccionadas. Desliza hacia abajo para ver
-          las mejores valoradas y nuestras recomendaciones.
-        </p>
+        {session ? (
+          <p
+            style={{
+              color: "rgba(252,237,252,0.8)",
+              maxWidth: "600px",
+              fontSize: "1.2rem"
+            }}
+          >
+            Continúa explorando tus películas favoritas y descubre nuevas recomendaciones.
+          </p>
+        ) : (
+          <div style={{ marginTop: "20px" }}>
+            <Link to="/login">
+              <Button
+                style={{
+                  backgroundColor: "#FCEDFC",
+                  color: "#1A0317",
+                  border: "none",
+                  fontWeight: 700,
+                  padding: "14px 24px",
+                  borderRadius: "14px",
+                  fontSize: "1.1rem",
+                }}
+              >
+                Inicia sesión para guardar favoritos
+              </Button>
+            </Link>
+            <p
+              style={{
+                color: "rgba(252,237,252,0.8)",
+                maxWidth: "600px",
+                fontSize: "1.2rem"
+              }}
+            >
+              Explora películas y series seleccionadas. Desliza hacia abajo para ver
+              las mejores valoradas y nuestras recomendaciones.
+            </p>
+          </div>
+        )}
       </Container>
 
       {showSections && (
         <>
-          {/* TOP 10 */}
           <Container style={{ marginBottom: "60px" }}>
             <h2
               style={{
@@ -113,7 +142,6 @@ function Home() {
             </Carousel>
           </Container>
 
-          {/* RECOMENDACIONES */}
           <Container>
             <h2
               style={{
@@ -145,6 +173,19 @@ function Home() {
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [login, setLogin] = useState(false);
+  const [loginData, setLoginData] = useState<any>({});
+  const [language, setLanguage] = useState("en-EN");
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    setLogin(false);
+    setLoginData({});
+  };
+
+  const actualizaLogin = (loginState: boolean, data: any) => {
+    setLogin(loginState);
+    setLoginData(data);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -164,16 +205,21 @@ function App() {
 
   return (
     <div style={{ background: "#FCEDFC", minHeight: "100vh", minWidth: "100vw" }}>
-      <Header session={false} />
+      <Header session={login} onLogout={cerrarSesion} />
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home session={login} />} />
         <Route path="/catalogo" element={<Catalogo />} />
         <Route path="/catalogo/:id" element={<Detalles />} />
         <Route path="/legal" element={<Legal />} />
         <Route path="/contacto" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login actualizaLogin={actualizaLogin} />}
+        />
+        <Route path="/register" element={<Register />} />
       </Routes>
+      
     </div>
   );
 }
