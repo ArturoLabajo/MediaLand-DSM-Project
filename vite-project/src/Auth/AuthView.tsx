@@ -1,21 +1,42 @@
-import { useState} from "react"  
+import { useState } from "react";
 import { Button, Col, Container, Form, Row, Card } from "react-bootstrap";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-function Login() {
+type LoginProps = {
+    actualizaLogin: (login: boolean, loginData: any) => void;
+};
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+function Login({ actualizaLogin }: LoginProps) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
+        event.preventDefault();
+
         const authData = {
             email: email,
             password: password,
-            reutrnSecureToken: true
-        }
-        axios.post("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAum3KKBT-55JShHDdVT5qXq4j0xEFqrmU", authData)
-    }
+            returnSecureToken: true
+        };
+
+        axios
+            .post(
+                "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAum3KKBT-55JShHDdVT5qXq4j0xEFqrmU",
+                authData
+            )
+            .then((response) => {
+                console.log(response);
+                actualizaLogin(true, response.data);
+                navigate("/");
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     return (
         <Container
             fluid
@@ -92,14 +113,6 @@ function Login() {
                                         type="email"
                                         value={email}
                                         placeholder="Introduce tu email"
-                                        style={{
-                                            backgroundColor: "rgba(252, 237, 252, 0.08)",
-                                            border: "1px solid rgba(252, 237, 252, 0.14)",
-                                            color: "#FCEDFC",
-                                            borderRadius: "14px",
-                                            padding: "14px 16px",
-                                            boxShadow: "none"
-                                        }}
                                     />
                                 </Form.Group>
                             </Col>
@@ -121,58 +134,33 @@ function Login() {
                                         type="password"
                                         value={password}
                                         placeholder="Introduce tu contraseña"
-                                        style={{
-                                            backgroundColor: "rgba(252, 237, 252, 0.08)",
-                                            border: "1px solid rgba(252, 237, 252, 0.14)",
-                                            color: "#FCEDFC",
-                                            borderRadius: "14px",
-                                            padding: "14px 16px",
-                                            boxShadow: "none"
-                                        }}
                                     />
                                 </Form.Group>
                             </Col>
 
                             <Col xs={12}>
-                                <Button
-                                    type='submit'
-                                    style={{
-                                        width: "100%",
-                                        border: "none",
-                                        borderRadius: "14px",
-                                        padding: "14px 16px",
-                                        backgroundColor: "#FCEDFC",
-                                        color: "#1A0317",
-                                        fontWeight: 800,
-                                        fontSize: "1rem",
-                                        letterSpacing: "0.4px"
-                                    }}
-                                >
+                                <Button type="submit" style={{ width: "100%" }}>
                                     LOGIN
                                 </Button>
                             </Col>
+                            <Col xs={12}>
+                                <Link
+                                    to="/register"
+                                    style={{
+                                        color: "#FCEDFC",
+                                        fontWeight: 700,
+                                        cursor: "pointer",
+                                        textDecoration: "none"
+                                    }}
+                                >
+                                    <Button type="submit" style={{ width: "100%" }}>
+                                        REGISTRATE
+                                    </Button>
+                                </Link>
+
+                            </Col>
                         </Row>
                     </Form>
-
-                    <div
-                        style={{
-                            marginTop: "22px",
-                            textAlign: "center",
-                            color: "rgba(252, 237, 252, 0.72)",
-                            fontSize: "0.95rem"
-                        }}
-                    >
-                        ¿Aún no tienes cuenta?{" "}
-                        <span
-                            style={{
-                                color: "#FCEDFC",
-                                fontWeight: 700,
-                                cursor: "pointer"
-                            }}
-                        >
-                            Regístrate
-                        </span>
-                    </div>
                 </Card.Body>
             </Card>
         </Container>
