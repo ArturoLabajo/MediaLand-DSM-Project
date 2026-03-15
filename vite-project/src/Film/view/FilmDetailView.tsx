@@ -22,42 +22,70 @@ function Detalles({ session, userId, idToken }: SesProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+  if (!id) return;
 
-    new LocalFilmRepository().getById(id).then((data) => {
-      setFilm(data);
-    });
-  }, [id]);
+  new LocalFilmRepository().getById(id).then((data) => {
+    setFilm(data);
+  });
+
+}, [id]);
 
   useEffect(() => {
-    const checkFavorite = async () => {
-      if (!film?.id || !userId || !idToken) return;
 
-      const fav = await FavoriteService.isFavorite(film.id, userId, idToken);
-      setIsFavorite(fav);
-    };
+  const checkFavoriteStatus = async () => {
 
-    checkFavorite();
-  }, [film, userId, idToken]);
-
-  const handleAddFavorite = async () => {
     try {
-      if (!film?.id || !userId || !idToken) return;
 
-      if (isFavorite) {
-        await FavoriteService.removeFavorite(userId, film.id, idToken);
+      if (!id || !userId || !idToken) {
         setIsFavorite(false);
-        alert("Película eliminada de favoritos");
-      } else {
-        await FavoriteService.addFavorite(userId, film.id, idToken);
-        setIsFavorite(true);
-        alert("Película añadida a favoritos");
+        return;
       }
+
+      const favorite =
+        await FavoriteService.isFavorite(id, userId, idToken);
+
+      setIsFavorite(favorite);
+
     } catch (error) {
-      console.error(error);
-      alert("Error actualizando favoritos");
+
+      console.error("Error comprobando favorito:", error);
+      setIsFavorite(false);
     }
   };
+
+  checkFavoriteStatus();
+
+}, [id, userId, idToken]);
+
+  const handleAddFavorite = async () => {
+
+  try {
+
+    if (!id || !userId || !idToken) return;
+
+    if (isFavorite) {
+
+      await FavoriteService.removeFavorite(userId, id, idToken);
+
+      setIsFavorite(false);
+
+      alert("Película eliminada de favoritos");
+
+    } else {
+
+      await FavoriteService.addFavorite(userId, id, idToken);
+
+      setIsFavorite(true);
+
+      alert("Película añadida a favoritos");
+    }
+
+  } catch (error) {
+
+    console.error(error);
+    alert("No se pudo actualizar favoritos");
+  }
+};
 
   
   if (!film) {
