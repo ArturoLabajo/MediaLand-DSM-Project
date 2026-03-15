@@ -5,7 +5,6 @@ import Carousel from "react-bootstrap/Carousel";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import FilmCard from "./Film/domain/Film";
-import LocalFilmRepository from "./Film/infrastructure/LocalFilmRespository";
 import Catalogo from "./Film/view/FilmView";
 import Header from "./Components/Header";
 import Legal from "./Static/LegalView";
@@ -18,6 +17,7 @@ import Login from "./Auth/AuthView";
 import Favorites from "./Film/view/FavoritesView";
 import { Button } from "react-bootstrap";
 import Register from "./Auth/RegisterView";
+import FilmService from "./Film/service/FilmService";
 
 
 type SessionProps = {
@@ -30,7 +30,7 @@ function Home({ session }: SessionProps) {
   const [showSections, setShowSections] = useState(false);
 
   useEffect(() => {
-    new LocalFilmRepository().getAll().then(setFilms);
+    FilmService.getAll().then(setFilms);
   }, []);
 
   useEffect(() => {
