@@ -20,6 +20,7 @@ function Detalles({ session, userId, idToken }: SesProps) {
   const [film, setFilm] = useState<Film | null>(null);
   
   const [isFavorite, setIsFavorite] = useState(false);
+  
 
   useEffect(() => {
   if (!id) return;
