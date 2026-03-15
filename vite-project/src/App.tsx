@@ -12,18 +12,19 @@ import Legal from "./Static/LegalView";
 import Contact from "./Static/ContactView";
 import type { Film } from "./Film/domain/Film";
 import logo from "./img/logo_001.png";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Link } from "react-router-dom";
 import Detalles from "./Film/view/FilmDetailView";
 import Login from "./Auth/AuthView";
-import { Link } from "react-router-dom";
+import Favorites from "./Film/view/FavoritesView";
 import { Button } from "react-bootstrap";
 import Register from "./Auth/RegisterView";
 
-type HomeProps = {
+type SessionProps = {
   session: boolean;
+  userId: string | null;
 };
 
-function Home({ session }: HomeProps) {
+function Home({ session }: SessionProps) {
   const [films, setFilms] = useState<Film[]>([]);
   const [showSections, setShowSections] = useState(false);
 
@@ -39,7 +40,6 @@ function Home({ session }: HomeProps) {
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -73,6 +73,7 @@ function Home({ session }: HomeProps) {
         >
           {session ? "Bienvenido de nuevo" : "Descubre MediaLand"}
         </h1>
+
         {session ? (
           <p
             style={{
@@ -100,11 +101,13 @@ function Home({ session }: HomeProps) {
                 Inicia sesión para guardar favoritos
               </Button>
             </Link>
+
             <p
               style={{
                 color: "rgba(252,237,252,0.8)",
                 maxWidth: "600px",
-                fontSize: "1.2rem"
+                fontSize: "1.2rem",
+                marginTop: "16px"
               }}
             >
               Explora películas y series seleccionadas. Desliza hacia abajo para ver
@@ -175,7 +178,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [login, setLogin] = useState(false);
   const [loginData, setLoginData] = useState<any>({});
-  const [language, setLanguage] = useState("en-EN");
+
   const cerrarSesion = () => {
     localStorage.removeItem("token");
     setLogin(false);
@@ -185,6 +188,7 @@ function App() {
   const actualizaLogin = (loginState: boolean, data: any) => {
     setLogin(loginState);
     setLoginData(data);
+    localStorage.setItem("token", data?.idToken || "");
   };
 
   useEffect(() => {
@@ -194,6 +198,10 @@ function App() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const userId = loginData?.localId ?? null;
+  const idToken = loginData?.idToken ?? null;
+  const email = loginData?.email ?? null;
 
   if (loading) {
     return (
@@ -208,26 +216,33 @@ function App() {
       <Header session={login} onLogout={cerrarSesion} />
 
       <Routes>
-        <Route path="/" element={<Home session={login} />} />
+        <Route path="/" element={<Home session={login} userId={userId} />} />
         <Route path="/catalogo" element={<Catalogo />} />
-        <Route path="/catalogo/:id" element={<Detalles />} />
+        <Route
+          path="/catalogo/:id"
+          element={
+            <Detalles
+              session={login}
+              userId={userId}
+              idToken={idToken}
+              email={email}
+            />
+          }
+        />
         <Route path="/legal" element={<Legal />} />
         <Route path="/contacto" element={<Contact />} />
-        <Route
-          path="/login"
-          element={<Login actualizaLogin={actualizaLogin} />}
-        />
+        <Route path="/login" element={<Login actualizaLogin={actualizaLogin} />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/favorites" element={<Favorites />} />
       </Routes>
-      
     </div>
   );
 }
 
 export default App;
 
-function chunkArray(array: any[], size: number) {
-  const result = [];
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const result: T[][] = [];
 
   for (let i = 0; i < array.length; i += size) {
     result.push(array.slice(i, i + size));

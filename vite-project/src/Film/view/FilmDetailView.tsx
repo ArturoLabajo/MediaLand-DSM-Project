@@ -5,12 +5,22 @@ import Badge from "react-bootstrap/Badge";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Film } from "../domain/Film";
 import LocalFilmRepository from "../infrastructure/LocalFilmRespository";
+import FavoriteService from "../service/FavoriteService";
 
-function Detalles () {
+type SesProps = {
+  session: boolean;
+  userId: string | null;
+  idToken: string | null;
+};
+
+function Detalles({ session, userId, idToken }: SesProps) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [hoverFav, setHoverFav] = useState(false);
   const [film, setFilm] = useState<Film | null>(null);
-  console.log(film?.title, film?.image);
+  
+  const [isFavorite, setIsFavorite] = useState(false);
+
   useEffect(() => {
     if (!id) return;
 
@@ -18,6 +28,37 @@ function Detalles () {
       setFilm(data);
     });
   }, [id]);
+
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (!film?.id || !userId || !idToken) return;
+
+      const fav = await FavoriteService.isFavorite(film.id, userId, idToken);
+      setIsFavorite(fav);
+    };
+
+    checkFavorite();
+  }, [film, userId, idToken]);
+
+  const handleAddFavorite = async () => {
+    try {
+      if (!film?.id || !userId || !idToken) return;
+
+      if (isFavorite) {
+        await FavoriteService.removeFavorite(userId, film.id, idToken);
+        setIsFavorite(false);
+        alert("Película eliminada de favoritos");
+      } else {
+        await FavoriteService.addFavorite(userId, film.id, idToken);
+        setIsFavorite(true);
+        alert("Película añadida a favoritos");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error actualizando favoritos");
+    }
+  };
+
   
   if (!film) {
     return (
@@ -128,13 +169,36 @@ function Detalles () {
                 borderRadius: "999px",
                 padding: "6px 12px",
                 fontWeight: 700,
-                color: "#FFD166",
+                color: "linear-gradient(to top, rgba(15, 6, 16, 0.98), rgba(15, 6, 16, 0.35))",
                 fontSize: "0.95rem"
                 }}
             >
                 ⭐ {film.ratingAverage.toFixed(1)}
             </span>
+
+            {session && (
+                <Button
+                    onClick={handleAddFavorite}
+                    onMouseEnter={() => setHoverFav(true)}
+                    onMouseLeave={() => setHoverFav(false)}
+                    style={{
+                        backgroundColor: hoverFav ? "#FCEDFC" : "rgba(252,237,252,0.15)",
+                        backdropFilter: "blur(6px)",
+                        borderRadius: "999px",
+                        padding: "6px 12px",
+                        fontWeight: 700,
+                        color: hoverFav ? "#1A0317" : "#FCEDFC",
+                        fontSize: "0.95rem",
+                        border: "1px solid rgba(252,237,252,0.25)",
+                        transition: "all 0.25s ease",
+                    }}
+                >
+                    {isFavorite ? "💔 Quitar de favoritos" : "❤️ Añadir a favoritos"}
+                </Button>
+            )}
+
             </div>
+            
 
             {/* título */}
             <h1

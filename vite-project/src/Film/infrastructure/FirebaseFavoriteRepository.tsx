@@ -2,82 +2,122 @@ import axios, { type AxiosResponse } from "axios";
 import type { FavoriteRepository } from "../domain/FavortieRepository";
 import type { Favorite } from "../domain/Favorite";
 
+const BASE_URL =
+  "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app";
+
+type FirebaseFavorite = {
+  id: number;
+  filmId: string;
+  userId: string;
+};
+
 const FirebaseFavoriteRepository: FavoriteRepository = {
-    getByUserId: async (userId: string) => {
-        const response: AxiosResponse = await axios.get(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/favorites.json"
-        );
+  getFavoritesByUser: async (
+    userId: string,
+    idToken: string
+  ): Promise<Favorite[]> => {
+    const response: AxiosResponse<Record<string, FirebaseFavorite> | null> =
+      await axios.get(`${BASE_URL}/favorites.json`, {
+        params: { auth: idToken },
+      });
 
-        let arrayFavorites: Favorite[] = [];
+    const arrayFavorites: Favorite[] = [];
 
-        if (!response.data) {
-            return arrayFavorites;
-        }
+    if (!response.data) return arrayFavorites;
 
-        for (let key in response.data) {
-            if (response.data[key].userId == userId) {
-                arrayFavorites.push({
-                    filmId: response.data[key].filmId,
-                    userId: response.data[key].userId
-                });
-            }
-        }
+    for (const key in response.data) {
+      const favorite = response.data[key];
 
-        return arrayFavorites;
-    },
-
-    isFavorite: async (filmId: string, userId: string) => {
-        const response: AxiosResponse = await axios.get(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/favorites.json"
-        );
-
-        if (!response.data) {
-            return false;
-        }
-
-        for (let key in response.data) {
-            if (
-                response.data[key].filmId == filmId &&
-                response.data[key].userId == userId
-            ) {
-                return true;
-            }
-        }
-
-        return false;
-    },
-
-    save: async (favorite: Favorite) => {
-        await axios.post(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/favorites.json",
-            {
-                filmId: favorite.filmId,
-                userId: favorite.userId
-            }
-        );
-    },
-
-    remove: async (filmId: string, userId: string) => {
-        const response: AxiosResponse = await axios.get(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/favorites.json"
-        );
-
-        if (!response.data) {
-            return;
-        }
-
-        for (let key in response.data) {
-            if (
-                response.data[key].filmId == filmId &&
-                response.data[key].userId == userId
-            ) {
-                await axios.delete(
-                    "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/favorites/" + key + ".json"
-                );
-                return;
-            }
-        }
+      if (favorite.userId === userId) {
+        arrayFavorites.push({
+          id: favorite.id,
+          filmId: favorite.filmId,
+          userId: favorite.userId,
+        });
+      }
     }
+
+    return arrayFavorites;
+  },
+
+  isFavorite: async (
+    filmId: string,
+    userId: string,
+    idToken: string
+  ): Promise<boolean> => {
+    const response: AxiosResponse<Record<string, FirebaseFavorite> | null> =
+      await axios.get(`${BASE_URL}/favorites.json`, {
+        params: { auth: idToken },
+      });
+
+    if (!response.data) return false;
+
+    for (const key in response.data) {
+      const favorite = response.data[key];
+
+      if (favorite.filmId === filmId && favorite.userId === userId) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  addFavorite: async (
+    userId: string,
+    filmId: string,
+    idToken: string
+  ): Promise<Favorite> => {
+    const counterResponse: AxiosResponse<number | null> = await axios.get(
+      `${BASE_URL}/counters/favorites.json`,
+      {
+        params: { auth: idToken },
+      }
+    );
+
+    const currentCounter = counterResponse.data ?? 0;
+    const newId = currentCounter + 1;
+
+    const newFavorite: Favorite = {
+      id: newId,
+      filmId,
+      userId,
+    };
+
+    await axios.put(`${BASE_URL}/favorites/${newId}.json`, newFavorite, {
+      params: { auth: idToken },
+    });
+
+    await axios.put(`${BASE_URL}/counters/favorites.json`, newId, {
+      params: { auth: idToken },
+    });
+
+    return newFavorite;
+  },
+
+  removeFavorite: async (
+    userId: string,
+    filmId: string,
+    idToken: string
+  ): Promise<void> => {
+    const response: AxiosResponse<Record<string, FirebaseFavorite> | null> =
+      await axios.get(`${BASE_URL}/favorites.json`, {
+        params: { auth: idToken },
+      });
+
+    if (!response.data) return;
+
+    for (const key in response.data) {
+      const favorite = response.data[key];
+
+      if (favorite.filmId === filmId && favorite.userId === userId) {
+        await axios.delete(`${BASE_URL}/favorites/${key}.json`, {
+          params: { auth: idToken },
+        });
+        return;
+      }
+    }
+  },
 };
 
 export default FirebaseFavoriteRepository;
