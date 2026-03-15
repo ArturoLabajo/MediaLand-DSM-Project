@@ -1,10 +1,13 @@
-import type { FilmRepository } from "../domain/FilmRepository";
+import FirebaseFilmRepository from "../infrastructure/FirebaseFilmRepository";
 
-const filmService = (repository: FilmRepository) => {
-    return {
-        getAll: () => repository.getAll(),
-        getById: (filmId: string) => repository.getById(filmId)
-    }
-}
+const FilmService = {
+  getAll: () => {
+    return FirebaseFilmRepository.getAll();
+  },
 
-export default filmService
+  getById: (id: string) => {
+    return FirebaseFilmRepository.getById(id);
+  },
+};
+
+export default FilmService;

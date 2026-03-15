@@ -1,49 +1,78 @@
 import axios, { type AxiosResponse } from "axios";
-import type { FilmRepository } from "../domain/FilmRepository";
 import type { Film } from "../domain/Film";
+import type { FilmRepository } from "../domain/FilmRepository";
+import type { FilmType } from "../domain/Film";
+
+const BASE_URL =
+  "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app";
+
+type FirebaseFilm = {
+  title: string;
+  releaseDate: string | number;
+  director: string;
+  synopsis: string;
+  ratingAverage: number;
+  type: string;
+  category: string;
+  image: string | number;
+};
+
+const mapFilmType = (value: string): FilmType => {
+  const normalized = value.toUpperCase();
+
+  if (normalized === "MOVIE") return "MOVIE" as FilmType;
+  if (normalized === "SERIE") return "SERIES" as FilmType;
+  if (normalized === "SERIES") return "SERIES" as FilmType;
+
+  return "MOVIE" as FilmType;
+};
+
+const mapFirebaseFilmToDomain = (id: string, film: FirebaseFilm): Film => {
+  return {
+    id,
+    title: film.title,
+    releaseDate: String(film.releaseDate),
+    director: film.director,
+    synopsis: film.synopsis,
+    ratingAverage: Number(film.ratingAverage),
+    type: mapFilmType(film.type),
+    category: film.category,
+    image: String(film.image),
+  };
+};
 
 const FirebaseFilmRepository: FilmRepository = {
-    getAll: async () => {
-        const response: AxiosResponse = await axios.get(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/films.json"
-        );
+  getAll: async (): Promise<Film[]> => {
+    const response: AxiosResponse<Record<string, FirebaseFilm | null> | null> =
+      await axios.get(`${BASE_URL}/films.json`);
 
-        let arrayFilms: Film[] = [];
+    const films: Film[] = [];
 
-        for (let key in response.data) {
-            arrayFilms.push({
-                id: key,
-                title: response.data[key].title,
-                releaseDate: response.data[key].releaseDate,
-                director: response.data[key].director,
-                synopsis: response.data[key].synopsis,
-                ratingAverage: response.data[key].ratingAverage,
-                type: response.data[key].type,
-                category: response.data[key].category
-            });
-        }
-
-        return arrayFilms;
-    },
-
-    getById: async (filmId: string) => {
-        const response: AxiosResponse = await axios.get(
-            'https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/films.json?orderBy="$key"&equalTo="' + filmId + '"'
-        );
-
-        const film: Film = {
-            id: filmId,
-            title: response.data[filmId].title,
-            releaseDate: response.data[filmId].releaseDate,
-            director: response.data[filmId].director,
-            synopsis: response.data[filmId].synopsis,
-            ratingAverage: response.data[filmId].ratingAverage,
-            type: response.data[filmId].type,
-            category: response.data[filmId].category
-        };
-
-        return film;
+    if (!response.data) {
+      return films;
     }
+
+    for (const key in response.data) {
+      const film = response.data[key];
+
+      if (!film) continue;
+
+      films.push(mapFirebaseFilmToDomain(key, film));
+    }
+
+    return films;
+  },
+
+  getById: async (id: string): Promise<Film | null> => {
+    const response: AxiosResponse<FirebaseFilm | null> =
+      await axios.get(`${BASE_URL}/films/${id}.json`);
+
+    if (!response.data) {
+      return null;
+    }
+
+    return mapFirebaseFilmToDomain(id, response.data);
+  },
 };
 
 export default FirebaseFilmRepository;

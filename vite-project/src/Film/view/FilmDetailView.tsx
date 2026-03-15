@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Film } from "../domain/Film";
-import LocalFilmRepository from "../infrastructure/LocalFilmRespository";
+import FilmService from "../service/FilmService";
 import FavoriteService from "../service/FavoriteService";
 
 type SesProps = {
@@ -24,11 +24,11 @@ function Detalles({ session, userId, idToken }: SesProps) {
   useEffect(() => {
   if (!id) return;
 
-  new LocalFilmRepository().getById(id).then((data) => {
+  FilmService.getById(id).then((data) => {
     setFilm(data);
   });
-
 }, [id]);
+
 
   useEffect(() => {
 
