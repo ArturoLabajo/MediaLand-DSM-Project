@@ -201,7 +201,6 @@ function App() {
 
   const userId = loginData?.localId ?? null;
   const idToken = loginData?.idToken ?? null;
-  const email = loginData?.email ?? null;
 
   if (loading) {
     return (
@@ -225,7 +224,6 @@ function App() {
               session={login}
               userId={userId}
               idToken={idToken}
-              email={email}
             />
           }
         />
