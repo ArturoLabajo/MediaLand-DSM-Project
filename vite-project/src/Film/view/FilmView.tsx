@@ -4,15 +4,14 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import FilmCard from "../domain/Film";
 import type { Film } from "../domain/Film";
-import LocalFilmRepository from "../infrastructure/LocalFilmRespository";
+import FilmService from "../service/FilmService";
 
 function Catalogo() {
   const [films, setFilms] = useState<Film[]>([]);
 
   useEffect(() => {
-    new LocalFilmRepository().getAll().then(setFilms);
+    FilmService.getAll().then(setFilms);
   }, []);
-
   return (
     <Container
       fluid

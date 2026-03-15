@@ -12,32 +12,37 @@ type FirebaseFavorite = {
 };
 
 const FirebaseFavoriteRepository: FavoriteRepository = {
+
   getFavoritesByUser: async (
     userId: string,
     idToken: string
   ): Promise<Favorite[]> => {
-    const response: AxiosResponse<Record<string, FirebaseFavorite> | null> =
+
+    const response: AxiosResponse<Record<string, FirebaseFavorite | null> | null> =
       await axios.get(`${BASE_URL}/favorites.json`, {
-        params: { auth: idToken },
+        params: { auth: idToken }
       });
 
-    const arrayFavorites: Favorite[] = [];
+    const favorites: Favorite[] = [];
 
-    if (!response.data) return arrayFavorites;
+    if (!response.data) return favorites;
 
     for (const key in response.data) {
+
       const favorite = response.data[key];
 
+      if (!favorite) continue;
+
       if (favorite.userId === userId) {
-        arrayFavorites.push({
+        favorites.push({
           id: favorite.id,
           filmId: favorite.filmId,
-          userId: favorite.userId,
+          userId: favorite.userId
         });
       }
     }
 
-    return arrayFavorites;
+    return favorites;
   },
 
   isFavorite: async (
@@ -45,15 +50,19 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
     userId: string,
     idToken: string
   ): Promise<boolean> => {
-    const response: AxiosResponse<Record<string, FirebaseFavorite> | null> =
+
+    const response: AxiosResponse<Record<string, FirebaseFavorite | null> | null> =
       await axios.get(`${BASE_URL}/favorites.json`, {
-        params: { auth: idToken },
+        params: { auth: idToken }
       });
 
     if (!response.data) return false;
 
     for (const key in response.data) {
+
       const favorite = response.data[key];
+
+      if (!favorite) continue;
 
       if (favorite.filmId === filmId && favorite.userId === userId) {
         return true;
@@ -68,12 +77,11 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
     filmId: string,
     idToken: string
   ): Promise<Favorite> => {
-    const counterResponse: AxiosResponse<number | null> = await axios.get(
-      `${BASE_URL}/counters/favorites.json`,
-      {
-        params: { auth: idToken },
-      }
-    );
+
+    const counterResponse: AxiosResponse<number | null> =
+      await axios.get(`${BASE_URL}/counters/favorites.json`, {
+        params: { auth: idToken }
+      });
 
     const currentCounter = counterResponse.data ?? 0;
     const newId = currentCounter + 1;
@@ -81,16 +89,20 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
     const newFavorite: Favorite = {
       id: newId,
       filmId,
-      userId,
+      userId
     };
 
-    await axios.put(`${BASE_URL}/favorites/${newId}.json`, newFavorite, {
-      params: { auth: idToken },
-    });
+    await axios.put(
+      `${BASE_URL}/favorites/${newId}.json`,
+      newFavorite,
+      { params: { auth: idToken } }
+    );
 
-    await axios.put(`${BASE_URL}/counters/favorites.json`, newId, {
-      params: { auth: idToken },
-    });
+    await axios.put(
+      `${BASE_URL}/counters/favorites.json`,
+      newId,
+      { params: { auth: idToken } }
+    );
 
     return newFavorite;
   },
@@ -100,24 +112,31 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
     filmId: string,
     idToken: string
   ): Promise<void> => {
-    const response: AxiosResponse<Record<string, FirebaseFavorite> | null> =
+
+    const response: AxiosResponse<Record<string, FirebaseFavorite | null> | null> =
       await axios.get(`${BASE_URL}/favorites.json`, {
-        params: { auth: idToken },
+        params: { auth: idToken }
       });
 
     if (!response.data) return;
 
     for (const key in response.data) {
+
       const favorite = response.data[key];
 
+      if (!favorite) continue;
+
       if (favorite.filmId === filmId && favorite.userId === userId) {
-        await axios.delete(`${BASE_URL}/favorites/${key}.json`, {
-          params: { auth: idToken },
-        });
+
+        await axios.delete(
+          `${BASE_URL}/favorites/${key}.json`,
+          { params: { auth: idToken } }
+        );
+
         return;
       }
     }
-  },
+  }
 };
 
 export default FirebaseFavoriteRepository;

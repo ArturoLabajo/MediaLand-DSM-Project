@@ -19,6 +19,7 @@ import Favorites from "./Film/view/FavoritesView";
 import { Button } from "react-bootstrap";
 import Register from "./Auth/RegisterView";
 
+
 type SessionProps = {
   session: boolean;
   userId: string | null;
@@ -231,7 +232,16 @@ function App() {
         <Route path="/contacto" element={<Contact />} />
         <Route path="/login" element={<Login actualizaLogin={actualizaLogin} />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/favorites" element={<Favorites />} />
+        <Route
+          path="/favorites"
+          element={
+            <Favorites
+              session={login}
+              userId={userId}
+              idToken={idToken}
+            />
+          }
+        />
       </Routes>
     </div>
   );
