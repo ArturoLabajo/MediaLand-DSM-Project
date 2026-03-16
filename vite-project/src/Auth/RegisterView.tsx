@@ -7,8 +7,18 @@ function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [perfil, setPerfil] = useState("/user1.jpg");
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
+
+    const perfilesDisponibles = [
+        "/user1.jpg",
+        "/user2.jpg",
+        "/user3.jpg",
+        "/user4.jpg",
+        "/user5.jpg",
+        "/user6.jpg"
+    ];
 
     const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -21,7 +31,6 @@ function Register() {
         };
 
         try {
-            // 1. Crear usuario en Firebase Auth
             const authResponse = await axios.post(
                 "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAum3KKBT-55JShHDdVT5qXq4j0xEFqrmU",
                 authData
@@ -29,7 +38,6 @@ function Register() {
 
             const token = authResponse.data.idToken;
 
-            // 2. Obtener usuarios actuales
             const usersResponse = await axios.get(
                 `https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/users.json?auth=${token}`
             );
@@ -40,12 +48,12 @@ function Register() {
                 ? Math.max(...Object.keys(users).map(Number)) + 1
                 : 0;
 
-            // 3. Guardar usuario en Realtime Database
             await axios.put(
                 `https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/users/${newUserId}.json?auth=${token}`,
                 {
                     name: name,
-                    email: email
+                    email: email,
+                    perfil: perfil
                 }
             );
 
@@ -213,6 +221,65 @@ function Register() {
                                             boxShadow: "none"
                                         }}
                                     />
+                                </Form.Group>
+                            </Col>
+
+                            <Col xs={12}>
+                                <Form.Group>
+                                    <Form.Label
+                                        style={{
+                                            color: "#FCEDFC",
+                                            fontWeight: 600,
+                                            marginBottom: "12px"
+                                        }}
+                                    >
+                                        Elige tu foto de perfil
+                                    </Form.Label>
+
+                                    <div
+                                        style={{
+                                            display: "grid",
+                                            gridTemplateColumns: "repeat(3, 1fr)",
+                                            gap: "14px"
+                                        }}
+                                    >
+                                        {perfilesDisponibles.map((foto) => {
+                                            const seleccionada = perfil === foto;
+
+                                            return (
+                                                <button
+                                                    key={foto}
+                                                    type="button"
+                                                    onClick={() => setPerfil(foto)}
+                                                    style={{
+                                                        background: "transparent",
+                                                        border: seleccionada
+                                                            ? "2px solid #FCEDFC"
+                                                            : "2px solid rgba(252, 237, 252, 0.12)",
+                                                        borderRadius: "18px",
+                                                        padding: "8px",
+                                                        cursor: "pointer",
+                                                        transition: "all 0.2s ease",
+                                                        boxShadow: seleccionada
+                                                            ? "0 0 0 4px rgba(252, 237, 252, 0.10)"
+                                                            : "none"
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={foto}
+                                                        alt={`Avatar ${foto}`}
+                                                        style={{
+                                                            width: "100%",
+                                                            aspectRatio: "1 / 1",
+                                                            objectFit: "cover",
+                                                            borderRadius: "14px",
+                                                            display: "block"
+                                                        }}
+                                                    />
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </Form.Group>
                             </Col>
 
