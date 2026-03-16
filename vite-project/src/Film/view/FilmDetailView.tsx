@@ -280,7 +280,12 @@ function Detalles({ session, userId, idToken }: SesProps) {
         <p><strong>Director:</strong> {film.director}</p>
         <p><strong>Fecha de estreno:</strong> {film.releaseDate}</p>
         <p><strong>Categoría:</strong> {film.category}</p>
-        <Comments />
+        <Comments
+          filmId={film.id}
+          session={session}
+          userId={userId}
+          userName="Usuario"
+        />
         <Button
           onClick={() => navigate("/catalogo")}
           style={{
