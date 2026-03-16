@@ -2,44 +2,58 @@ import axios, { type AxiosResponse } from "axios";
 import type { CommentRepository } from "../domain/CommentRepository";
 import type { Comment } from "../domain/Comment";
 
+const BASE_URL =
+  "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app";
+
+type FirebaseComment = {
+  filmId: string;
+  userId: string;
+  userName: string;
+  text: string;
+};
+
 const FirebaseCommentRepository: CommentRepository = {
-    getByFilmId: async (filmId: string) => {
-        const response: AxiosResponse = await axios.get(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/comments.json"
-        );
+  getByFilmId: async (filmId: string): Promise<Comment[]> => {
+    const response: AxiosResponse<Record<string, FirebaseComment | null> | null> =
+      await axios.get(`${BASE_URL}/comments.json`);
 
-        let arrayComments: Comment[] = [];
+    const comments: Comment[] = [];
 
-        if (!response.data) {
-            return arrayComments;
-        }
+    if (!response.data) return comments;
 
-        for (let key in response.data) {
-            if (response.data[key].filmId == filmId) {
-                arrayComments.push({
-                    id: key,
-                    filmId: response.data[key].filmId,
-                    userId: response.data[key].userId,
-                    userName: response.data[key].userName,
-                    text: response.data[key].text
-                });
-            }
-        }
+    for (const key in response.data) {
+      const comment = response.data[key];
 
-        return arrayComments;
-    },
+      if (!comment) continue;
 
-    save: async (comment: Comment) => {
-        await axios.post(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/comments.json",
-            {
-                filmId: comment.filmId,
-                userId: comment.userId,
-                userName: comment.userName,
-                text: comment.text
-            }
-        );
+      if (comment.filmId === filmId) {
+        comments.push({
+          id: key,
+          filmId: comment.filmId,
+          userId: comment.userId,
+          userName: comment.userName,
+          text: comment.text
+        });
+      }
     }
+
+    return comments;
+  },
+
+  save: async (comment: Comment, idToken: string): Promise<void> => {
+    await axios.post(
+      `${BASE_URL}/comments.json`,
+      {
+        filmId: comment.filmId,
+        userId: comment.userId,
+        userName: comment.userName,
+        text: comment.text
+      },
+      {
+        params: { auth: idToken }
+      }
+    );
+  }
 };
 
 export default FirebaseCommentRepository;
