@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Button, Col, Container, Form, Row, Card } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Card, Alert } from "react-bootstrap";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 type LoginProps = {
     actualizaLogin: (login: boolean, loginData: any) => void;
@@ -11,30 +10,42 @@ type LoginProps = {
 function Login({ actualizaLogin }: LoginProps) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
     const navigate = useNavigate();
 
-    const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setErrorMsg("");
 
         const authData = {
-            email: email,
-            password: password,
+            email,
+            password,
             returnSecureToken: true
         };
 
-        axios
-            .post(
+        try {
+            const response = await axios.post(
                 "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAum3KKBT-55JShHDdVT5qXq4j0xEFqrmU",
                 authData
-            )
-            .then((response) => {
-                console.log(response);
-                actualizaLogin(true, response.data);
-                navigate("/");
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+            );
+
+            actualizaLogin(true, response.data);
+            navigate("/");
+        } catch (error: any) {
+            const firebaseError = error?.response?.data?.error?.message;
+
+            if (firebaseError === "INVALID_LOGIN_CREDENTIALS") {
+                setErrorMsg("Email o contraseña incorrectos.");
+            } else if (firebaseError === "EMAIL_NOT_FOUND") {
+                setErrorMsg("Ese email no existe.");
+            } else if (firebaseError === "INVALID_PASSWORD") {
+                setErrorMsg("La contraseña es incorrecta.");
+            } else {
+                setErrorMsg("Ha ocurrido un error al iniciar sesión.");
+            }
+
+            console.error(error);
+        }
     };
 
     return (
@@ -97,6 +108,14 @@ function Login({ actualizaLogin }: LoginProps) {
                     <Form onSubmit={submitHandler}>
                         <Row className="g-4">
                             <Col xs={12}>
+                                {errorMsg && (
+                                    <Alert variant="danger">
+                                        {errorMsg}
+                                    </Alert>
+                                )}
+                            </Col>
+
+                            <Col xs={12}>
                                 <Form.Group>
                                     <Form.Label
                                         style={{
@@ -139,25 +158,42 @@ function Login({ actualizaLogin }: LoginProps) {
                             </Col>
 
                             <Col xs={12}>
-                                <Button type="submit" style={{ width: "100%" }}>
-                                    LOGIN
-                                </Button>
-                            </Col>
-                            <Col xs={12}>
-                                <Link
-                                    to="/register"
+                                <Button
+                                    type="submit"
                                     style={{
-                                        color: "#FCEDFC",
-                                        fontWeight: 700,
-                                        cursor: "pointer",
-                                        textDecoration: "none"
+                                        width: "100%",
+                                        border: "none",
+                                        borderRadius: "14px",
+                                        padding: "14px",
+                                        backgroundColor: "#FCEDFC",
+                                        color: "#1A0317",
+                                        fontWeight: 800,
+                                        fontSize: "1rem",
+                                        letterSpacing: "0.5px",
+                                        boxShadow: "0 6px 18px rgba(252,237,252,0.2)"
                                     }}
                                 >
-                                    <Button type="submit" style={{ width: "100%" }}>
-                                        REGISTRATE
+                                    Iniciar sesión
+                                </Button>
+                            </Col>
+
+                            <Col xs={12}>
+                                <Link to="/register" style={{ textDecoration: "none" }}>
+                                    <Button
+                                        style={{
+                                            width: "100%",
+                                            borderRadius: "14px",
+                                            padding: "14px",
+                                            backgroundColor: "transparent",
+                                            border: "1px solid rgba(252,237,252,0.35)",
+                                            color: "#FCEDFC",
+                                            fontWeight: 700,
+                                            fontSize: "0.95rem"
+                                        }}
+                                    >
+                                        Crear cuenta
                                     </Button>
                                 </Link>
-
                             </Col>
                         </Row>
                     </Form>

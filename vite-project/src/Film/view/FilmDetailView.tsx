@@ -4,20 +4,91 @@ import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Film } from "../domain/Film";
-import LocalFilmRepository from "../infrastructure/LocalFilmRespository";
+import FilmService from "../service/FilmService";
+import FavoriteService from "../service/FavoriteService";
+import Comments from "../../Components/Comments";
 
-function Detalles () {
+type SesProps = {
+  session: boolean;
+  userId: string | null;
+  idToken: string | null;
+};
+
+function Detalles({ session, userId, idToken }: SesProps) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [hoverFav, setHoverFav] = useState(false);
   const [film, setFilm] = useState<Film | null>(null);
-  console.log(film?.title, film?.image);
-  useEffect(() => {
-    if (!id) return;
+  
+  const [isFavorite, setIsFavorite] = useState(false);
+  
 
-    new LocalFilmRepository().getById(id).then((data) => {
-      setFilm(data);
-    });
-  }, [id]);
+  useEffect(() => {
+  if (!id) return;
+
+  FilmService.getById(id).then((data) => {
+    setFilm(data);
+  });
+}, [id]);
+
+
+  useEffect(() => {
+
+  const checkFavoriteStatus = async () => {
+
+    try {
+
+      if (!id || !userId || !idToken) {
+        setIsFavorite(false);
+        return;
+      }
+
+      const favorite =
+        await FavoriteService.isFavorite(id, userId, idToken);
+
+      setIsFavorite(favorite);
+
+    } catch (error) {
+
+      console.error("Error comprobando favorito:", error);
+      setIsFavorite(false);
+    }
+  };
+
+  checkFavoriteStatus();
+
+}, [id, userId, idToken]);
+
+  const handleAddFavorite = async () => {
+
+  try {
+
+    if (!id || !userId || !idToken) return;
+
+    if (isFavorite) {
+
+      await FavoriteService.removeFavorite(userId, id, idToken);
+
+      setIsFavorite(false);
+
+      alert("Película eliminada de favoritos");
+
+    } else {
+
+      await FavoriteService.addFavorite(userId, id, idToken);
+
+      setIsFavorite(true);
+
+      alert("Película añadida a favoritos");
+    }
+
+  } catch (error) {
+
+    console.error(error);
+    alert("No se pudo actualizar favoritos");
+  }
+};
+
   
   if (!film) {
     return (
@@ -128,13 +199,36 @@ function Detalles () {
                 borderRadius: "999px",
                 padding: "6px 12px",
                 fontWeight: 700,
-                color: "#FFD166",
+                color: "linear-gradient(to top, rgba(15, 6, 16, 0.98), rgba(15, 6, 16, 0.35))",
                 fontSize: "0.95rem"
                 }}
             >
                 ⭐ {film.ratingAverage.toFixed(1)}
             </span>
+
+            {session && (
+                <Button
+                    onClick={handleAddFavorite}
+                    onMouseEnter={() => setHoverFav(true)}
+                    onMouseLeave={() => setHoverFav(false)}
+                    style={{
+                        backgroundColor: hoverFav ? "#FCEDFC" : "rgba(252,237,252,0.15)",
+                        backdropFilter: "blur(6px)",
+                        borderRadius: "999px",
+                        padding: "6px 12px",
+                        fontWeight: 700,
+                        color: hoverFav ? "#1A0317" : "#FCEDFC",
+                        fontSize: "0.95rem",
+                        border: "1px solid rgba(252,237,252,0.25)",
+                        transition: "all 0.25s ease",
+                    }}
+                >
+                    {isFavorite ? "💔 Quitar de favoritos" : "❤️ Añadir a favoritos"}
+                </Button>
+            )}
+
             </div>
+            
 
             {/* título */}
             <h1
@@ -186,7 +280,12 @@ function Detalles () {
         <p><strong>Director:</strong> {film.director}</p>
         <p><strong>Fecha de estreno:</strong> {film.releaseDate}</p>
         <p><strong>Categoría:</strong> {film.category}</p>
-
+        <Comments
+          filmId={film.id}
+          session={session}
+          userId={userId}
+          userName="Usuario"
+        />
         <Button
           onClick={() => navigate("/catalogo")}
           style={{

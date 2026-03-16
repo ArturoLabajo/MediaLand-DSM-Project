@@ -6,12 +6,14 @@ import SidebarButton from '../Components/SidebarButton.js'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-type HeaderProps = {
+
+type SesionProps = {
     session: boolean;
     onLogout: () => void;
 };
 
-function Header({ session, onLogout }: HeaderProps) {
+
+function Header({ session, onLogout }: SesionProps) {
     //AQUI HAY QUE DIFERENCIAR LOGIN Y NO LOGIN
     if (!session) {
         return (
@@ -254,7 +256,7 @@ function Header({ session, onLogout }: HeaderProps) {
                                     label="Catálogo"
                                 />
                             </Nav.Link>
-                            <Nav.Link as={Link} to="/login" style={{ padding: 0, width: "100%" }}>
+                            <Nav.Link as={Link} to="/favorites" style={{ padding: 0, width: "100%" }}>
                                 <SidebarButton
                                     id="favorite"
                                     label="Favoritos"
