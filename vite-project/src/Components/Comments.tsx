@@ -12,7 +12,8 @@ interface CommentsProps {
   filmId: string;
   session: boolean;
   userId: string | null;
-  userName?: string;
+  userName: string | null;
+  idToken: string | null;
 }
 
 const service = commentService(FirebaseCommentRepository);
@@ -21,7 +22,8 @@ function Comments({
   filmId,
   session,
   userId,
-  userName = "Usuario"
+  userName,
+  idToken
 }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [text, setText] = useState("");
@@ -33,9 +35,11 @@ function Comments({
     try {
       setLoading(true);
       setError("");
+
       const data = await service.getByFilmId(filmId);
       setComments(data);
-    } catch (err) {
+    } catch (error) {
+      console.error(error);
       setError("No se pudieron cargar los comentarios");
     } finally {
       setLoading(false);
@@ -50,7 +54,7 @@ function Comments({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!session || !userId) {
+    if (!session || !userId || !idToken) {
       setError("Debes iniciar sesión para comentar");
       return;
     }
@@ -60,21 +64,27 @@ function Comments({
       return;
     }
 
+    const authorName = userName || "Usuario";
+
     try {
       setSaving(true);
       setError("");
 
-      await service.save({
-        id: "",
-        filmId,
-        userId,
-        userName,
-        text: text.trim()
-      });
+      await service.save(
+        {
+          id: "",
+          filmId,
+          userId,
+          userName: authorName,
+          text: text.trim()
+        },
+        idToken
+      );
 
       setText("");
       await loadComments();
-    } catch (err) {
+    } catch (error) {
+      console.error(error);
       setError("No se pudo guardar el comentario");
     } finally {
       setSaving(false);
@@ -85,7 +95,8 @@ function Comments({
     <div
       style={{
         marginTop: "28px",
-        background: "linear-gradient(180deg, rgba(36,18,34,0.95) 0%, rgba(20,8,18,0.98) 100%)",
+        background:
+          "linear-gradient(180deg, rgba(36,18,34,0.95) 0%, rgba(20,8,18,0.98) 100%)",
         border: "1px solid rgba(252, 237, 252, 0.12)",
         borderRadius: "20px",
         overflow: "hidden",
@@ -101,12 +112,7 @@ function Comments({
           }}
         >
           <Accordion.Header>
-            <div
-              style={{
-                fontWeight: 700,
-                color: "#1A0317"
-              }}
-            >
+            <div style={{ fontWeight: 700, color: "#1A0317" }}>
               💬 Comentarios ({comments.length})
             </div>
           </Accordion.Header>
@@ -141,7 +147,7 @@ function Comments({
                       marginBottom: "10px"
                     }}
                   >
-                    Añadir comentario
+                    Añadir comentario como <strong>{userName}</strong>
                   </Form.Label>
 
                   <Form.Control
@@ -192,14 +198,7 @@ function Comments({
             )}
 
             {loading ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  color: "#FCEDFC"
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <Spinner animation="border" size="sm" />
                 <span>Cargando comentarios...</span>
               </div>
@@ -227,32 +226,9 @@ function Comments({
                       padding: "16px 18px"
                     }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "8px",
-                        gap: "12px",
-                        flexWrap: "wrap"
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontWeight: 700,
-                          color: "#FCEDFC"
-                        }}
-                      >
+                    <div style={{ marginBottom: "8px" }}>
+                      <span style={{ fontWeight: 700, color: "#FCEDFC" }}>
                         {comment.userName}
-                      </span>
-
-                      <span
-                        style={{
-                          fontSize: "0.85rem",
-                          color: "rgba(252,237,252,0.55)"
-                        }}
-                      >
-                        Usuario #{comment.userId}
                       </span>
                     </div>
 

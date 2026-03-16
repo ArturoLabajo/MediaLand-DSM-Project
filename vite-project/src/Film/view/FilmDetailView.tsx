@@ -12,9 +12,10 @@ type SesProps = {
   session: boolean;
   userId: string | null;
   idToken: string | null;
+  userName: string | null;
 };
 
-function Detalles({ session, userId, idToken }: SesProps) {
+function Detalles({ session, userId, idToken, userName }: SesProps) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [hoverFav, setHoverFav] = useState(false);
@@ -284,7 +285,8 @@ function Detalles({ session, userId, idToken }: SesProps) {
           filmId={film.id}
           session={session}
           userId={userId}
-          userName="Usuario"
+          userName={userName}
+          idToken={idToken}
         />
         <Button
           onClick={() => navigate("/catalogo")}

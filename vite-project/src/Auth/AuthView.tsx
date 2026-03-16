@@ -29,7 +29,29 @@ function Login({ actualizaLogin }: LoginProps) {
                 authData
             );
 
-            actualizaLogin(true, response.data);
+            const usersResponse = await axios.get(
+                "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/users.json"
+            );
+
+            let userName = response.data.email.split("@")[0];
+
+            if (usersResponse.data) {
+                for (const key in usersResponse.data) {
+                    const user = usersResponse.data[key];
+
+                    if (user?.email === response.data.email) {
+                        userName = user.name;
+                        break;
+                    }
+                }
+            }
+
+            const loginData = {
+                ...response.data,
+                userName
+            };
+
+            actualizaLogin(true, loginData);
             navigate("/");
         } catch (error: any) {
             const firebaseError = error?.response?.data?.error?.message;
