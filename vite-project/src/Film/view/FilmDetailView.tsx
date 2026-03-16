@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Film } from "../domain/Film";
 import FilmService from "../service/FilmService";
 import FavoriteService from "../service/FavoriteService";
+import Comments from "../../Components/Comments";
 
 type SesProps = {
   session: boolean;
@@ -279,7 +280,7 @@ function Detalles({ session, userId, idToken }: SesProps) {
         <p><strong>Director:</strong> {film.director}</p>
         <p><strong>Fecha de estreno:</strong> {film.releaseDate}</p>
         <p><strong>Categoría:</strong> {film.category}</p>
-
+        <Comments />
         <Button
           onClick={() => navigate("/catalogo")}
           style={{
