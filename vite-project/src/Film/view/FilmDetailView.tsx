@@ -15,9 +15,10 @@ type SesProps = {
   userId: string | null;
   idToken: string | null;
   userName: string | null;
+  perfil:string | null;
 };
 
-function Detalles({ session, userId, idToken, userName }: SesProps) {
+function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
   const { id } = useParams();
   const navigate = useNavigate();
   const ratingService = RatingService(ratingRepository);
@@ -373,6 +374,7 @@ function Detalles({ session, userId, idToken, userName }: SesProps) {
           userId={userId}
           userName={userName}
           idToken={idToken}
+          perfil={perfil}
         />
 
         <Button

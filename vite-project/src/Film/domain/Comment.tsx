@@ -3,5 +3,6 @@ export interface Comment {
   filmId: string;
   userId: string;
   userName: string;
+  perfil: string;
   text: string;
 };

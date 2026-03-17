@@ -9,6 +9,7 @@ type FirebaseComment = {
   filmId: string;
   userId: string;
   userName: string;
+  perfil: string;
   text: string;
 };
 
@@ -32,6 +33,7 @@ const FirebaseCommentRepository: CommentRepository = {
           filmId: comment.filmId,
           userId: comment.userId,
           userName: comment.userName,
+          perfil: comment.perfil || "/user1.jpg",
           text: comment.text
         });
       }
@@ -47,6 +49,7 @@ const FirebaseCommentRepository: CommentRepository = {
         filmId: comment.filmId,
         userId: comment.userId,
         userName: comment.userName,
+        perfil: comment.perfil,
         text: comment.text
       },
       {

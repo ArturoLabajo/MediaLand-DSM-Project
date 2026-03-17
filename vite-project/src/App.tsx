@@ -19,7 +19,6 @@ import { Button } from "react-bootstrap";
 import Register from "./Auth/RegisterView";
 import FilmService from "./Film/service/FilmService";
 
-
 type SessionProps = {
   session: boolean;
   userId: string | null;
@@ -96,7 +95,7 @@ function Home({ session }: SessionProps) {
                   fontWeight: 700,
                   padding: "14px 24px",
                   borderRadius: "14px",
-                  fontSize: "1.1rem",
+                  fontSize: "1.1rem"
                 }}
               >
                 Inicia sesión para guardar favoritos
@@ -203,6 +202,7 @@ function App() {
   const userId = loginData?.localId ?? null;
   const idToken = loginData?.idToken ?? null;
   const userName = loginData?.userName ?? null;
+  const perfil = loginData?.perfil ?? null;
 
   if (loading) {
     return (
@@ -214,7 +214,12 @@ function App() {
 
   return (
     <div style={{ background: "#FCEDFC", minHeight: "100vh", minWidth: "100vw" }}>
-      <Header session={login} onLogout={cerrarSesion} />
+      <Header
+        session={login}
+        onLogout={cerrarSesion}
+        userName={userName}
+        perfil={perfil}
+      />
 
       <Routes>
         <Route path="/" element={<Home session={login} userId={userId} />} />
@@ -227,6 +232,7 @@ function App() {
               userId={userId}
               idToken={idToken}
               userName={userName}
+              perfil={perfil}
             />
           }
         />
@@ -245,7 +251,6 @@ function App() {
           }
         />
       </Routes>
-      
     </div>
   );
 }

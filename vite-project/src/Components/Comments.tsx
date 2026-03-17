@@ -13,6 +13,7 @@ interface CommentsProps {
   session: boolean;
   userId: string | null;
   userName: string | null;
+  perfil: string | null;
   idToken: string | null;
 }
 
@@ -23,6 +24,7 @@ function Comments({
   session,
   userId,
   userName,
+  perfil,
   idToken
 }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -65,6 +67,7 @@ function Comments({
     }
 
     const authorName = userName || "Usuario";
+    const authorPerfil = perfil || "/user1.jpg";
 
     try {
       setSaving(true);
@@ -76,6 +79,7 @@ function Comments({
           filmId,
           userId,
           userName: authorName,
+          perfil: authorPerfil,
           text: text.trim()
         },
         idToken
@@ -139,17 +143,38 @@ function Comments({
 
             {session ? (
               <Form onSubmit={handleSubmit} className="mb-4">
-                <Form.Group>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    marginBottom: "12px"
+                  }}
+                >
+                  <img
+                    src={perfil || "/user1.jpg"}
+                    alt="Tu perfil"
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      border: "2px solid rgba(252,237,252,0.85)"
+                    }}
+                  />
+
                   <Form.Label
                     style={{
                       color: "#FCEDFC",
                       fontWeight: 600,
-                      marginBottom: "10px"
+                      marginBottom: 0
                     }}
                   >
                     Añadir comentario como <strong>{userName}</strong>
                   </Form.Label>
+                </div>
 
+                <Form.Group>
                   <Form.Control
                     as="textarea"
                     rows={3}
@@ -226,7 +251,26 @@ function Comments({
                       padding: "16px 18px"
                     }}
                   >
-                    <div style={{ marginBottom: "8px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        marginBottom: "10px"
+                      }}
+                    >
+                      <img
+                        src={comment.perfil || "/user1.jpg"}
+                        alt={comment.userName}
+                        style={{
+                          width: "42px",
+                          height: "42px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          border: "2px solid rgba(252,237,252,0.85)"
+                        }}
+                      />
+
                       <span style={{ fontWeight: 700, color: "#FCEDFC" }}>
                         {comment.userName}
                       </span>

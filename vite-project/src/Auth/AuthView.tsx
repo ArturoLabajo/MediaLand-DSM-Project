@@ -34,6 +34,7 @@ function Login({ actualizaLogin }: LoginProps) {
             );
 
             let userName = response.data.email.split("@")[0];
+            let perfil = "/user1.jpg";
 
             if (usersResponse.data) {
                 for (const key in usersResponse.data) {
@@ -41,6 +42,7 @@ function Login({ actualizaLogin }: LoginProps) {
 
                     if (user?.email === response.data.email) {
                         userName = user.name;
+                        perfil = user.perfil;
                         break;
                     }
                 }
@@ -48,7 +50,8 @@ function Login({ actualizaLogin }: LoginProps) {
 
             const loginData = {
                 ...response.data,
-                userName
+                userName,
+                perfil
             };
 
             actualizaLogin(true, loginData);
