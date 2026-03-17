@@ -48,27 +48,25 @@ const FirebaseRatingRepository: RatingRepository = {
   },
 
   save: async (rating: Rating, idToken?: string): Promise<void> => {
-    const authParam = idToken ? `?auth=${idToken}` : "";
-
-    await axios.post(`${BASE_URL}/ratings.json${authParam}`, {
-      filmId: rating.filmId,
-      userId: rating.userId,
-      value: rating.value,
-    });
+    await axios.post(
+      `${BASE_URL}/ratings.json?auth=${idToken}`,
+      {
+        filmId: rating.filmId,
+        userId: rating.userId,
+        value: rating.value,
+      }
+    );
   },
 
-  update: async (
-    ratingId: string,
-    rating: Rating,
-    idToken?: string
-  ): Promise<void> => {
-    const authParam = idToken ? `?auth=${idToken}` : "";
-
-    await axios.patch(`${BASE_URL}/ratings/${ratingId}.json${authParam}`, {
-      filmId: rating.filmId,
-      userId: rating.userId,
-      value: rating.value,
-    });
+  update: async (ratingId: string, rating: Rating, idToken?: string): Promise<void> => {
+    await axios.patch(
+      `${BASE_URL}/ratings/${ratingId}.json?auth=${idToken}`,
+      {
+        filmId: rating.filmId,
+        userId: rating.userId,
+        value: rating.value,
+      }
+    );
   },
 };
 

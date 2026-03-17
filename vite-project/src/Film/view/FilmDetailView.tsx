@@ -131,7 +131,7 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
       }
 
       const newAverage = await ratingService.getAverageByFilmId(id);
-      await FilmService.updateRatingAverage(id, newAverage);
+      await FilmService.updateRatingAverage(id, newAverage, idToken);
 
       setAverageRating(newAverage);
       setUserRating(value);

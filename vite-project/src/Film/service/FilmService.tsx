@@ -9,9 +9,9 @@ const FilmService = {
     return FirebaseFilmRepository.getById(id);
   },
 
-  updateRatingAverage: (id: string, ratingAverage: number) => {
-    return FirebaseFilmRepository.updateRatingAverage(id, ratingAverage);
-  },
+  updateRatingAverage: (id: string, ratingAverage: number, idToken?: string) => {
+    return FirebaseFilmRepository.updateRatingAverage(id, ratingAverage, idToken);
+  }
 };
 
 export default FilmService;
