@@ -8,6 +8,10 @@ const FilmService = {
   getById: (id: string) => {
     return FirebaseFilmRepository.getById(id);
   },
+
+  updateRatingAverage: (id: string, ratingAverage: number) => {
+    return FirebaseFilmRepository.updateRatingAverage(id, ratingAverage);
+  },
 };
 
 export default FilmService;

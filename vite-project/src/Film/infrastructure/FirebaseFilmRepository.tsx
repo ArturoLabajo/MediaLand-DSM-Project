@@ -73,6 +73,11 @@ const FirebaseFilmRepository: FilmRepository = {
 
     return mapFirebaseFilmToDomain(id, response.data);
   },
+  updateRatingAverage: async (id: string, ratingAverage: number): Promise<void> => {
+    await axios.patch(`${BASE_URL}/films/${id}.json`, {
+      ratingAverage
+    });
+  }
 };
 
 export default FirebaseFilmRepository;

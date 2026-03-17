@@ -1,69 +1,75 @@
-import axios, { type AxiosResponse } from "axios";
-import type { RatingRepository } from "../domain/RatingRepository";
+import axios from "axios";
 import type { Rating } from "../domain/Rating";
+import type { RatingRepository } from "../domain/RatingRepository";
+
+const BASE_URL =
+  "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app";
 
 const FirebaseRatingRepository: RatingRepository = {
-    getByFilmId: async (filmId: string) => {
-        const response: AxiosResponse = await axios.get(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/ratings.json"
-        );
+  getByFilmId: async (filmId: string): Promise<Rating[]> => {
+    const response = await axios.get(`${BASE_URL}/ratings.json`);
+    const data = response.data;
 
-        let arrayRatings: Rating[] = [];
+    if (!data) return [];
 
-        if (!response.data) {
-            return arrayRatings;
-        }
+    return Object.entries(data)
+      .map(([key, value]: [string, any]) => ({
+        ratingId: key,
+        filmId: String(value.filmId),
+        userId: String(value.userId),
+        value: Number(value.value),
+      }))
+      .filter((rating) => rating.filmId === filmId);
+  },
 
-        for (let key in response.data) {
-            if (response.data[key].filmId == filmId) {
-                arrayRatings.push({
-                    filmId: response.data[key].filmId,
-                    userId: response.data[key].userId,
-                    value: response.data[key].value
-                });
-            }
-        }
+  getUserRating: async (
+    filmId: string,
+    userId: string
+  ): Promise<Rating | null> => {
+    const response = await axios.get(`${BASE_URL}/ratings.json`);
+    const data = response.data;
 
-        return arrayRatings;
-    },
+    if (!data) return null;
 
-    getUserRating: async (filmId: string, userId: string) => {
-        const response: AxiosResponse = await axios.get(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/ratings.json"
-        );
+    const ratings: Rating[] = Object.entries(data).map(
+      ([key, value]: [string, any]) => ({
+        ratingId: key,
+        filmId: String(value.filmId),
+        userId: String(value.userId),
+        value: Number(value.value),
+      })
+    );
 
-        if (!response.data) {
-            return null;
-        }
+    const userRating = ratings.find(
+      (rating) => rating.filmId === filmId && rating.userId === userId
+    );
 
-        for (let key in response.data) {
-            if (
-                response.data[key].filmId == filmId &&
-                response.data[key].userId == userId
-            ) {
-                const rating: Rating = {
-                    filmId: response.data[key].filmId,
-                    userId: response.data[key].userId,
-                    value: response.data[key].value
-                };
+    return userRating || null;
+  },
 
-                return rating;
-            }
-        }
+  save: async (rating: Rating, idToken?: string): Promise<void> => {
+    const authParam = idToken ? `?auth=${idToken}` : "";
 
-        return null;
-    },
+    await axios.post(`${BASE_URL}/ratings.json${authParam}`, {
+      filmId: rating.filmId,
+      userId: rating.userId,
+      value: rating.value,
+    });
+  },
 
-    save: async (rating: Rating) => {
-        await axios.post(
-            "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/ratings.json",
-            {
-                filmId: rating.filmId,
-                userId: rating.userId,
-                value: rating.value
-            }
-        );
-    }
+  update: async (
+    ratingId: string,
+    rating: Rating,
+    idToken?: string
+  ): Promise<void> => {
+    const authParam = idToken ? `?auth=${idToken}` : "";
+
+    await axios.patch(`${BASE_URL}/ratings/${ratingId}.json${authParam}`, {
+      filmId: rating.filmId,
+      userId: rating.userId,
+      value: rating.value,
+    });
+  },
 };
 
 export default FirebaseRatingRepository;
