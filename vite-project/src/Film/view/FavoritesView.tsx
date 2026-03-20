@@ -3,7 +3,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import type { Film } from "../domain/Film";
-import FilmCard from "../domain/Film";
+import FilmCard from "./components/FilmCard";
 import FilmService from "../service/FilmService";
 import FavoriteService from "../service/FavoriteService";
 

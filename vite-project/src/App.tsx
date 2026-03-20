@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import Carousel from "react-bootstrap/Carousel";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import FilmCard from "./Film/domain/Film";
+import FilmCard from "./Film/view/components/FilmCard";
 import Catalogo from "./Film/view/FilmView";
 import Header from "./Components/Header";
 import Legal from "./Static/LegalView";
