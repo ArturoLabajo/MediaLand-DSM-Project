@@ -5,7 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import FilmCard from "./components/FilmCard";
 import type { Film } from "../domain/Film";
-import FilmService from "../service/FilmService";
+import { filmServiceInstance } from "../infrastructure/Repository";
 
 const typeOptions = [
   { value: "Todos", label: "Todos" },
@@ -158,7 +158,7 @@ function Catalogo() {
   const [selectedCategory, setSelectedCategory] = useState("Todas");
 
   useEffect(() => {
-    FilmService.getAll().then(setFilms);
+    filmServiceInstance.getAll().then(setFilms);
   }, []);
 
   const filteredFilms = useMemo(() => {

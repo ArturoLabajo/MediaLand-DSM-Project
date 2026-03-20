@@ -17,7 +17,7 @@ import Login from "./Auth/AuthView";
 import Favorites from "./Film/view/FavoritesView";
 import { Button } from "react-bootstrap";
 import Register from "./Auth/RegisterView";
-import FilmService from "./Film/service/FilmService";
+import { filmServiceInstance } from "./Film/infrastructure/Repository";
 
 type SessionProps = {
   session: boolean;
@@ -29,7 +29,7 @@ function Home({ session }: SessionProps) {
   const [showSections, setShowSections] = useState(false);
 
   useEffect(() => {
-    FilmService.getAll().then(setFilms);
+    filmServiceInstance.getAll().then(setFilms);
   }, []);
 
   useEffect(() => {
