@@ -4,11 +4,10 @@ import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Film } from "../domain/Film";
-import RatingService from "../service/RatingService";
-import { ratingRepository } from "../infrastructure/Repository";
 import Comments from "../../Components/Comments";
 import { favoriteServiceInstance } from "../infrastructure/Repository";
 import { filmServiceInstance } from "../infrastructure/Repository";
+import { ratingServiceInstance } from "../infrastructure/Repository";
 
 type SesProps = {
   session: boolean;
@@ -130,7 +129,7 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
         );
       }
 
-      const newAverage = await ratingService.getAverageByFilmId(id);
+      const newAverage = await ratingServiceInstance.getAverageByFilmId(id);
       await filmServiceInstance.updateRatingAverage(id, newAverage, idToken);
 
       setAverageRating(newAverage);
