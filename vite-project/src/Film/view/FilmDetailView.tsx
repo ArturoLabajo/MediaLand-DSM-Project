@@ -5,10 +5,9 @@ import Badge from "react-bootstrap/Badge";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Film } from "../domain/Film";
 import FilmService from "../service/FilmService";
-import RatingService from "../service/RatingService";
-import { ratingRepository } from "../infrastructure/Repository";
 import Comments from "../../Components/Comments";
 import { favoriteServiceInstance } from "../infrastructure/Repository";
+import { ratingServiceInstance } from "../infrastructure/Repository";
 
 type SesProps = {
   session: boolean;
@@ -21,7 +20,7 @@ type SesProps = {
 function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const ratingService = RatingService(ratingRepository);
+
 
   const [hoverFav, setHoverFav] = useState(false);
   const [film, setFilm] = useState<Film | null>(null);
@@ -43,11 +42,11 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
       if (!id) return;
 
       try {
-        const average = await ratingService.getAverageByFilmId(id);
+        const average = await ratingServiceInstance.getAverageByFilmId(id);
         setAverageRating(average);
 
         if (userId) {
-          const existingRating = await ratingService.getUserRating(id, userId);
+          const existingRating = await ratingServiceInstance.getUserRating(id, userId);
           setUserRating(existingRating ? existingRating.value : null);
         } else {
           setUserRating(null);
@@ -107,10 +106,10 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
     try {
       setRatingSaving(true);
 
-      const existingRating = await ratingService.getUserRating(id, userId);
+      const existingRating = await ratingServiceInstance.getUserRating(id, userId);
 
       if (existingRating) {
-        await ratingService.update(
+        await ratingServiceInstance.update(
           existingRating.ratingId,
           {
             ...existingRating,
@@ -119,7 +118,7 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
           idToken
         );
       } else {
-        await ratingService.save(
+        await ratingServiceInstance.save(
           {
             ratingId: "",
             filmId: id,
@@ -130,7 +129,7 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
         );
       }
 
-      const newAverage = await ratingService.getAverageByFilmId(id);
+      const newAverage = await ratingServiceInstance.getAverageByFilmId(id);
       await FilmService.updateRatingAverage(id, newAverage, idToken);
 
       setAverageRating(newAverage);
