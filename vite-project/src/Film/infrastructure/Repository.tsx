@@ -5,8 +5,7 @@ import FirebaseFavoriteRepository from "./FirebaseFavoriteRepository";
 
 import favoriteService from "../service/FavoriteService";
 import commentService from "../service/CommentService";
-import ratingService from "../service/RatingService";
-
+import filmService from "../service/FilmService";
 
 export const filmRepository = FirebaseFilmRepository;
 export const ratingRepository = FirebaseRatingRepository;
@@ -15,4 +14,4 @@ export const favoriteRepository = FirebaseFavoriteRepository;
 
 export const favoriteServiceInstance = favoriteService(favoriteRepository);
 export const commentServiceInstance = commentService(commentRepository);
-export const ratingServiceInstance = ratingService(ratingRepository);
+export const filmServiceInstance = filmService(filmRepository);

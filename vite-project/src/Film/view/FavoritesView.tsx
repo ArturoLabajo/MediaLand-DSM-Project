@@ -4,8 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import type { Film } from "../domain/Film";
 import FilmCard from "./components/FilmCard";
-import FilmService from "../service/FilmService";
-import { favoriteServiceInstance } from "../infrastructure/Repository";
+import { favoriteServiceInstance, filmServiceInstance } from "../infrastructure/Repository";
 
 type SesProps = {
   session: boolean;
@@ -29,7 +28,7 @@ function Favorites({ session, userId, idToken }: SesProps) {
         const favorites = await favoriteServiceInstance.getFavoritesByUser(userId, idToken);
 
         const films = await Promise.all(
-          favorites.map((favorite) => FilmService.getById(favorite.filmId))
+          favorites.map((favorite) => filmServiceInstance.getById(favorite.filmId))
         );
 
         const validFilms = films.filter((film): film is Film => film !== null);

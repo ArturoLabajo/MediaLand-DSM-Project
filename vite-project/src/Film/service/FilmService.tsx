@@ -1,17 +1,17 @@
-import FirebaseFilmRepository from "../infrastructure/FirebaseFilmRepository";
+import type { FilmRepository } from "../domain/FilmRepository";
 
-const FilmService = {
-  getAll: () => {
-    return FirebaseFilmRepository.getAll();
-  },
+const filmService = (repository: FilmRepository) => {
+  return {
+    getAll: () => repository.getAll(),
 
-  getById: (id: string) => {
-    return FirebaseFilmRepository.getById(id);
-  },
+    getById: (id: string) => repository.getById(id),
 
-  updateRatingAverage: (id: string, ratingAverage: number, idToken?: string) => {
-    return FirebaseFilmRepository.updateRatingAverage(id, ratingAverage, idToken);
-  }
+    updateRatingAverage: (
+      id: string,
+      ratingAverage: number,
+      idToken: string
+    ) => repository.updateRatingAverage(id, ratingAverage, idToken)
+  };
 };
 
-export default FilmService;
+export default filmService;
