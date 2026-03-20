@@ -3,14 +3,13 @@ import FirebaseRatingRepository from "./FirebaseRatingRepository";
 import FirebaseCommentRepository from "./FirebaseCommentRepository";
 import FirebaseFavoriteRepository from "./FirebaseFavoriteRepository";
 
-const filmRepository = FirebaseFilmRepository;
-const ratingRepository = FirebaseRatingRepository;
-const commentRepository = FirebaseCommentRepository;
-const favoriteRepository = FirebaseFavoriteRepository;
+import favoriteService from "../service/FavoriteService";
+import commentService from "../service/CommentService";
 
-export {
-    filmRepository,
-    ratingRepository,
-    commentRepository,
-    favoriteRepository
-};
+export const filmRepository = FirebaseFilmRepository;
+export const ratingRepository = FirebaseRatingRepository;
+export const commentRepository = FirebaseCommentRepository;
+export const favoriteRepository = FirebaseFavoriteRepository;
+
+export const favoriteServiceInstance = favoriteService(favoriteRepository);
+export const commentServiceInstance = commentService(commentRepository);

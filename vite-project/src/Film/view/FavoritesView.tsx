@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col";
 import type { Film } from "../domain/Film";
 import FilmCard from "./components/FilmCard";
 import FilmService from "../service/FilmService";
-import FavoriteService from "../service/FavoriteService";
+import { favoriteServiceInstance } from "../infrastructure/Repository";
 
 type SesProps = {
   session: boolean;
@@ -26,7 +26,7 @@ function Favorites({ session, userId, idToken }: SesProps) {
           return;
         }
 
-        const favorites = await FavoriteService.getFavoritesByUser(userId, idToken);
+        const favorites = await favoriteServiceInstance.getFavoritesByUser(userId, idToken);
 
         const films = await Promise.all(
           favorites.map((favorite) => FilmService.getById(favorite.filmId))

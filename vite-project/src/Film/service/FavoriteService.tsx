@@ -1,21 +1,19 @@
-import FirebaseFavoriteRepository from "../infrastructure/FirebaseFavoriteRepository";
+import type { FavoriteRepository } from "../domain/FavortieRepository";
 
-const FavoriteService = {
-  addFavorite: (userId: string, filmId: string, idToken: string) => {
-    return FirebaseFavoriteRepository.addFavorite(userId, filmId, idToken);
-  },
+const favoriteService = (repository: FavoriteRepository) => {
+  return {
+    getFavoritesByUser: (userId: string, idToken: string) =>
+      repository.getFavoritesByUser(userId, idToken),
 
-  removeFavorite: (userId: string, filmId: string, idToken: string) => {
-    return FirebaseFavoriteRepository.removeFavorite(userId, filmId, idToken);
-  },
+    isFavorite: (filmId: string, userId: string, idToken: string) =>
+      repository.isFavorite(filmId, userId, idToken),
 
-  isFavorite: (filmId: string, userId: string, idToken: string) => {
-    return FirebaseFavoriteRepository.isFavorite(filmId, userId, idToken);
-  },
+    addFavorite: (filmId: string, userId: string, idToken: string) =>
+      repository.addFavorite(filmId, userId, idToken),
 
-  getFavoritesByUser: (userId: string, idToken: string) => {
-    return FirebaseFavoriteRepository.getFavoritesByUser(userId, idToken);
-  }
+    removeFavorite: (filmId: string, userId: string, idToken: string) =>
+      repository.removeFavorite(filmId, userId, idToken)
+  };
 };
 
-export default FavoriteService;
+export default favoriteService;

@@ -5,8 +5,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "react-bootstrap/Alert";
 import type { Comment } from "../Film/domain/Comment";
-import commentService from "../Film/service/CommentService";
-import FirebaseCommentRepository from "../Film/infrastructure/FirebaseCommentRepository";
+import { commentServiceInstance } from "../Film/infrastructure/Repository";
 
 interface CommentsProps {
   filmId: string;
@@ -17,7 +16,6 @@ interface CommentsProps {
   idToken: string | null;
 }
 
-const service = commentService(FirebaseCommentRepository);
 
 function Comments({
   filmId,
@@ -38,7 +36,7 @@ function Comments({
       setLoading(true);
       setError("");
 
-      const data = await service.getByFilmId(filmId);
+      const data = await commentServiceInstance.getByFilmId(filmId);
       setComments(data);
     } catch (error) {
       console.error(error);
@@ -73,7 +71,7 @@ function Comments({
       setSaving(true);
       setError("");
 
-      await service.save(
+      await commentServiceInstance.save(
         {
           id: "",
           filmId,

@@ -5,10 +5,10 @@ import Badge from "react-bootstrap/Badge";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Film } from "../domain/Film";
 import FilmService from "../service/FilmService";
-import FavoriteService from "../service/FavoriteService";
 import RatingService from "../service/RatingService";
 import { ratingRepository } from "../infrastructure/Repository";
 import Comments from "../../Components/Comments";
+import { favoriteServiceInstance } from "../infrastructure/Repository";
 
 type SesProps = {
   session: boolean;
@@ -68,7 +68,7 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
           return;
         }
 
-        const favorite = await FavoriteService.isFavorite(id, userId, idToken);
+        const favorite = await favoriteServiceInstance.isFavorite(id, userId, idToken);
         setIsFavorite(favorite);
       } catch (error) {
         console.error("Error comprobando favorito:", error);
@@ -84,11 +84,11 @@ function Detalles({ session, userId, idToken, userName, perfil }: SesProps) {
       if (!id || !userId || !idToken) return;
 
       if (isFavorite) {
-        await FavoriteService.removeFavorite(userId, id, idToken);
+        await favoriteServiceInstance.removeFavorite(userId, id, idToken);
         setIsFavorite(false);
         alert("Película eliminada de favoritos");
       } else {
-        await FavoriteService.addFavorite(userId, id, idToken);
+        await favoriteServiceInstance.addFavorite(userId, id, idToken);
         setIsFavorite(true);
         alert("Película añadida a favoritos");
       }
