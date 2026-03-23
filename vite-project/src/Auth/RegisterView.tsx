@@ -4,13 +4,21 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
+    // Estados del form de registro
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    // Imagen de perfil seleccionada por el user
     const [perfil, setPerfil] = useState("/user1.jpg");
+
+    // Estado para mostrar errores
     const [errorMessage, setErrorMessage] = useState("");
+
+    // Hook para redirección
     const navigate = useNavigate();
 
+    // Lista de imagenes para los usuarios 
     const perfilesDisponibles = [
         "/user1.jpg",
         "/user2.jpg",
@@ -20,10 +28,12 @@ function Register() {
         "/user6.jpg"
     ];
 
+    // Envio del formulario de registro
     const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setErrorMessage("");
 
+        // Datos necesarios para registrar el user en Firebase
         const authData = {
             email: email,
             password: password,
@@ -31,23 +41,29 @@ function Register() {
         };
 
         try {
+            // Registro del usuario en Firebase
             const authResponse = await axios.post(
                 "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAum3KKBT-55JShHDdVT5qXq4j0xEFqrmU",
                 authData
             );
 
+            // Token para poder escribire en la bbdd
             const token = authResponse.data.idToken;
 
+            // Recogemos los usuarios existentes para calcular el id
             const usersResponse = await axios.get(
                 `https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/users.json?auth=${token}`
             );
 
             const users = usersResponse.data;
 
+            // Si existen usuarios se coge el id mas alto +1
+            // Si no existen usuarios se empiza por 0
             const newUserId = users
                 ? Math.max(...Object.keys(users).map(Number)) + 1
                 : 0;
 
+            // Guardamos la info en la bbdd
             await axios.put(
                 `https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/users/${newUserId}.json?auth=${token}`,
                 {
@@ -57,14 +73,18 @@ function Register() {
                 }
             );
 
+            // Redirigimos al login
             navigate("/login");
+ 
         } catch (error: any) {
             console.error("ERROR COMPLETO:", error);
             console.error("ERROR RESPONSE:", error.response);
             console.error("ERROR DATA:", error.response?.data);
 
+            // Error de Firebase
             const firebaseError = error.response?.data?.error?.message;
 
+            // Mensajes de error para el usuario
             if (firebaseError === "EMAIL_EXISTS") {
                 setErrorMessage("Ese email ya está registrado");
             } else if (firebaseError === "WEAK_PASSWORD") {

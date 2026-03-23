@@ -1,5 +1,5 @@
 export type Favorite = {
-  id: number;
-  filmId: string;
-  userId: string;
+  id: number; // id del favorito
+  filmId: string; // id de la peli o serie marcada como favorita
+  userId: string; // id del usuario que marco el favorito
 };

@@ -2,10 +2,13 @@ import axios from "axios";
 import type { Rating } from "../domain/Rating";
 import type { RatingRepository } from "../domain/RatingRepository";
 
+// URL del Firebase
 const BASE_URL =
   "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app";
 
+  // implementacion del repo de valoraciones usando Firebase
 const FirebaseRatingRepository: RatingRepository = {
+  // obtiene todas las valoraciones de una peli
   getByFilmId: async (filmId: string): Promise<Rating[]> => {
     const response = await axios.get(`${BASE_URL}/ratings.json`);
     const data = response.data;
@@ -22,6 +25,7 @@ const FirebaseRatingRepository: RatingRepository = {
       .filter((rating) => rating.filmId === filmId);
   },
 
+  // obtiene la valoracion de un usuario para una peli concreta para saber si ya voto o no
   getUserRating: async (
     filmId: string,
     userId: string
@@ -40,6 +44,7 @@ const FirebaseRatingRepository: RatingRepository = {
       })
     );
 
+    // buscamos si el usuario ya tiene valoro una pelicula
     const userRating = ratings.find(
       (rating) => rating.filmId === filmId && rating.userId === userId
     );
@@ -47,6 +52,7 @@ const FirebaseRatingRepository: RatingRepository = {
     return userRating || null;
   },
 
+  // guarda nueva valoración en Firebase
   save: async (rating: Rating, idToken?: string): Promise<void> => {
     await axios.post(
       `${BASE_URL}/ratings.json?auth=${idToken}`,
@@ -58,6 +64,7 @@ const FirebaseRatingRepository: RatingRepository = {
     );
   },
 
+  // actualiza una valoracion existente
   update: async (ratingId: string, rating: Rating, idToken?: string): Promise<void> => {
     await axios.patch(
       `${BASE_URL}/ratings/${ratingId}.json?auth=${idToken}`,

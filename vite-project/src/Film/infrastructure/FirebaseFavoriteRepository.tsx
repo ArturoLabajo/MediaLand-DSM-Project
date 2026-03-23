@@ -2,17 +2,21 @@ import axios, { type AxiosResponse } from "axios";
 import type { FavoriteRepository } from "../domain/FavortieRepository";
 import type { Favorite } from "../domain/Favorite";
 
+//URL del Firebase
 const BASE_URL =
   "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app";
 
+  // tipo del almacenamiento en el Firebase
 type FirebaseFavorite = {
   id: number;
   filmId: string;
   userId: string;
 };
 
+// implementacion del repositorio usando Firebase
 const FirebaseFavoriteRepository: FavoriteRepository = {
 
+  // obtenemos los favortios de un usuario
   getFavoritesByUser: async (
     userId: string,
     idToken: string
@@ -25,6 +29,7 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
 
     const favorites: Favorite[] = [];
 
+    // si no hay favoritos devolvemos vacio
     if (!response.data) return favorites;
 
     for (const key in response.data) {
@@ -33,6 +38,7 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
 
       if (!favorite) continue;
 
+      // solo se añaden los favortios del usuario actual
       if (favorite.userId === userId) {
         favorites.push({
           id: favorite.id,
@@ -45,6 +51,7 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
     return favorites;
   },
 
+  // comprueba si una peli esta marcada como favorita
   isFavorite: async (
     filmId: string,
     userId: string,
@@ -72,6 +79,7 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
     return false;
   },
 
+  // anadimos una nueva peli o serie a favortios
   addFavorite: async (
     userId: string,
     filmId: string,
@@ -92,12 +100,14 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
       userId
     };
 
+    // guardamos el nuevo favorito
     await axios.put(
       `${BASE_URL}/favorites/${newId}.json`,
       newFavorite,
       { params: { auth: idToken } }
     );
 
+    // actualiza el contador global 
     await axios.put(
       `${BASE_URL}/counters/favorites.json`,
       newId,
@@ -107,6 +117,7 @@ const FirebaseFavoriteRepository: FavoriteRepository = {
     return newFavorite;
   },
 
+  // elimina contenido de favortios de un usuario
   removeFavorite: async (
     userId: string,
     filmId: string,

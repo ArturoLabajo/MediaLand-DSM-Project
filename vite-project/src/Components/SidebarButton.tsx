@@ -1,9 +1,11 @@
+// props del menu lateral
 type SidebarButtonProps = {
   id: string;
   label: string;
 };
 
 function SidebarButton({ id, label }: SidebarButtonProps) {
+  // Manejo del uso del click del boton
   const handleClick = () => {
     switch (id) {
       case "home":

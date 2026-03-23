@@ -3,14 +3,21 @@ import { Button, Col, Container, Form, Row, Card, Alert } from "react-bootstrap"
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
+// Props del componente de login
+// actualizaLogin: funcion que actualiza el estado de sesion 
 type LoginProps = {
     actualizaLogin: (login: boolean, loginData: any) => void;
 };
 
 function Login({ actualizaLogin }: LoginProps) {
+    // Estados del formulario
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    // Estado para mostrar errores
     const [errorMsg, setErrorMsg] = useState("");
+
+    // Hook para navegar entre rutas
     const navigate = useNavigate();
 
     const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -24,18 +31,23 @@ function Login({ actualizaLogin }: LoginProps) {
         };
 
         try {
+
+            // Peticion login a Firebase
             const response = await axios.post(
                 "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAum3KKBT-55JShHDdVT5qXq4j0xEFqrmU",
                 authData
             );
 
+            // Petición a la base de datos para recuperar datos del usuario
             const usersResponse = await axios.get(
                 "https://medialand-ra-default-rtdb.europe-west1.firebasedatabase.app/users.json"
             );
 
+            // Valores por defecto
             let userName = response.data.email.split("@")[0];
             let perfil = "/user1.jpg";
 
+            // Si existe el ususario en la bbdd buscamos la coincidencia con el email
             if (usersResponse.data) {
                 for (const key in usersResponse.data) {
                     const user = usersResponse.data[key];
@@ -48,17 +60,24 @@ function Login({ actualizaLogin }: LoginProps) {
                 }
             }
 
+            // Objeto de sesion
             const loginData = {
                 ...response.data,
                 userName,
                 perfil
             };
 
+            // Actualizamos el estado de login
             actualizaLogin(true, loginData);
+
+            //Redirigimos al home
             navigate("/");
+
         } catch (error: any) {
+            // Mensaje de error del Firebase
             const firebaseError = error?.response?.data?.error?.message;
 
+            // Mostramos el mensaje de forma entendible
             if (firebaseError === "INVALID_LOGIN_CREDENTIALS") {
                 setErrorMsg("Email o contraseña incorrectos.");
             } else if (firebaseError === "EMAIL_NOT_FOUND") {

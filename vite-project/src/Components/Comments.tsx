@@ -7,6 +7,7 @@ import Alert from "react-bootstrap/Alert";
 import type { Comment } from "../Film/domain/Comment";
 import { commentServiceInstance } from "../Film/infrastructure/Repository";
 
+// Props del componente del usuarios
 interface CommentsProps {
   filmId: string;
   session: boolean;
@@ -25,12 +26,18 @@ function Comments({
   perfil,
   idToken
 }: CommentsProps) {
+  // Estados con la lista de comentarios de la película
   const [comments, setComments] = useState<Comment[]>([]);
+
+  // Estado del texto que escribe el usuario en el formulario
   const [text, setText] = useState("");
+
+  // Estados de control
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Cargamos los comentarios asocaidos a la peli, se montan y se guardan los nuevos comentarios
   const loadComments = async () => {
     try {
       setLoading(true);
@@ -46,11 +53,13 @@ function Comments({
     }
   };
 
+  // Cuando cambia la peli se cargan los comentarios
   useEffect(() => {
     if (!filmId) return;
     loadComments();
   }, [filmId]);
 
+  // Manjero del envio del formulario de comentarios
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -83,6 +92,7 @@ function Comments({
         idToken
       );
 
+      // Limpiamos el campo de texto y recargamos comentarios
       setText("");
       await loadComments();
     } catch (error) {

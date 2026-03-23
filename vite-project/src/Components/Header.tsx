@@ -5,6 +5,7 @@ import SidebarButton from "../Components/SidebarButton.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
+// props del componente Header
 type HeaderProps = {
     session: boolean;
     onLogout: () => void;
@@ -13,6 +14,7 @@ type HeaderProps = {
 };
 
 function Header({ session, onLogout, userName, perfil }: HeaderProps) {
+    //Estilo general de la barra superior fija
     const navbarStyle = {
         position: "fixed" as const,
         top: 0,
@@ -24,6 +26,7 @@ function Header({ session, onLogout, userName, perfil }: HeaderProps) {
         padding: "16px 24px"
     };
 
+    // Contenedor principal de la cabecera
     const containerStyle = {
         position: "relative" as const,
         display: "flex",
@@ -32,6 +35,7 @@ function Header({ session, onLogout, userName, perfil }: HeaderProps) {
         width: "100%"
     };
 
+    // Estilo del boton que abre el menu lateral
     const toggleStyle = {
         width: "42px",
         height: "42px",
@@ -47,11 +51,14 @@ function Header({ session, onLogout, userName, perfil }: HeaderProps) {
         justifyContent: "center"
     };
 
+    // Mostrar el perfil si se cumplen que hay sesion, existe nombre e imagen
     const centerProfile = session && userName && perfil;
+
     console.log({ session, userName, perfil });
     return (
         <Nav className="navbar navbar-light fixed-top" style={navbarStyle}>
             <div className="container-fluid" style={containerStyle}>
+                
                 <button
                     className="navbar-toggler"
                     type="button"
